@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hamza AI Assistant</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #080808;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+header {
+    padding: 22px;
+    background: #111;
+    border-bottom: 1px solid #333;
+}
+
+header h2 {
+    color: #ffffff;
+    font-size: 23px;
+}
+
+header p {
+    color: #888;
+    margin-top: 6px;
+}
+
+.container {
+    padding: 20px;
+    text-align: center;
+}
+
+.logo {
+    width: 85px;
+    height: 85px;
+    border-radius: 50%;
+    background: linear-gradient(135deg,#555,#111);
+    border: 2px solid #888;
+    margin: 45px auto 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 35px;
+    font-weight: bold;
+}
+
+h1 {
+    font-size: 26px;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: #888;
+    margin-bottom: 30px;
+}
+
+.chatbox {
+    background: #151515;
+    border: 1px solid #333;
+    border-radius: 15px;
+    padding: 15px;
+    min-height: 180px;
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+#response {
+    color: #ddd;
+    line-height: 1.7;
+    white-space: pre-wrap;
+}
+
+input {
+    width: 100%;
+    padding: 16px;
+    background: #171717;
+    border: 1px solid #444;
+    border-radius: 12px;
+    color: white;
+    outline: none;
+    font-size: 16px;
+    margin-bottom: 12px;
+}
+
+button {
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    background: #eeeeee;
+    color: black;
+    font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.send {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.voice {
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+    background: #252525;
+    border: 2px solid #777;
+    color: white;
+    font-size: 28px;
+}
+
+.apps {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 12px;
+    margin-top: 30px;
+}
+
+.apps button {
+    background: #191919;
+    color: white;
+    border: 1px solid #444;
+    padding: 18px 5px;
+}
+
+footer {
+    color: #666;
+    text-align: center;
+    padding: 30px 10px;
+    font-size: 12px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h2>HAMZA AI</h2>
+    <p>Your Personal AI Assistant</p>
+</header>
+
+<div class="container">
+
+    <div class="logo">H</div>
+
+    <h1>Hamza AI Assistant</h1>
+
+    <p class="subtitle">
+        Your Voice. Your Commands. Your Assistant.
+    </p>
+
+    <div class="chatbox">
+        <p id="response">
+            Assalamualaikum Hamza Sir!
+
+            I am Hamza AI Assistant.
+
+            How can I help you today?
+        </p>
+    </div>
+
+    <input
+        type="text"
+        id="command"
+        placeholder="Type your command here..."
+    >
+
+    <button class="send" onclick="sendCommand()">
+        SEND COMMAND
+    </button>
+
+    <button class="voice" onclick="startVoice()">
+        🎤
+    </button>
+
+    <p style="color:#888;margin-top:12px">
+        Tap microphone to speak
+    </p>
+
+    <div class="apps">
+
+        <button onclick="openApp('https://www.youtube.com')">
+            ▶ YouTube
+        </button>
+
+        <button onclick="openApp('https://www.instagram.com')">
+            ◎ Instagram
+        </button>
+
+        <button onclick="openApp('https://www.whatsapp.com')">
+            ☎ WhatsApp
+        </button>
+
+    </div>
+
+</div>
+
+<footer>
+    HAMZA AI ASSISTANT<br>
+    Personal AI Project
+</footer>
+
+<script>
+
+const response = document.getElementById("response");
+
+function speak(text) {
+    if ('speechSynthesis' in window) {
+        speechSynthesis.cancel();
+
+        let speech = new SpeechSynthesisUtterance(text);
+
+        speech.lang = "hi-IN";
+        speech.rate = 1;
+
+        speechSynthesis.speak(speech);
+    }
+}
+
+function sendCommand() {
+
+    let command = document.getElementById("command")
+        .value.trim().toLowerCase();
+
+    if (!command) return;
+
+    response.innerText = "You: " + command;
+
+    if (command.includes("youtube")) {
+
+        response.innerText += "\nOpening YouTube...";
+        speak("Opening YouTube");
+        openApp("https://www.youtube.com");
+
+    }
+
+    else if (command.includes("instagram")) {
+
+        response.innerText += "\nOpening Instagram...";
+        speak("Opening Instagram");
+        openApp("https://www.instagram.com");
+
+    }
+
+    else if (command.includes("whatsapp")) {
+
+        response.innerText += "\nOpening WhatsApp...";
+        speak("Opening WhatsApp");
+        openApp("https://www.whatsapp.com");
+
+    }
+
+    else if (command.includes("hello") ||
+             command.includes("salam") ||
+             command.includes("नमस्ते")) {
+
+        response.innerText += "\nAssalamualaikum Hamza Sir!";
+        speak("Assalamualaikum Hamza Sir");
+
+    }
+
+    else {
+
+        response.innerText +=
+        "\nI am ready to receive your command. AI connection will be added in the next version.";
+
+        speak("I am ready for your command");
+
+    }
+
+    document.getElementById("command").value = "";
+}
+
+function openApp(url) {
+    window.open(url, "_blank");
+}
+
+function startVoice() {
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+
+        response.innerText =
+        "Voice recognition is not supported in this browser.";
+
+        return;
+    }
+
+    const recognition = new SpeechRecognition();
+
+    recognition.lang = "hi-IN";
+    recognition.interimResults = false;
+
+    recognition.onresult = function(event) {
+
+        let command =
+        event.results[0][0].transcript;
+
+        document.getElementById("command").value = command;
+
+        sendCommand();
+    };
+
+    recognition.onerror = function() {
+        response.innerText =
+        "Voice recognition failed. Please try again.";
+    };
+
+    recognition.start();
+}
+
+</script>
+
+</body>
+</html>
