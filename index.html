@@ -1,145 +1,101 @@
-
-     
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hamza AI Assistant</title>
-<style>
-* {margin: 0;padding: 0;box-sizing: border-box;}
-body {background: #080808;color: white;font-family: Arial, sans-serif;}
-header {padding: 22px;background: #111;border-bottom: 1px solid #333;}
-header h2 {color: #ffffff;font-size: 23px;}
-header p {color: #888;margin-top: 6px;}
-.container {padding: 20px;text-align: center;}
-.logo {width: 85px;height: 85px;border-radius: 50%;background: linear-gradient(135deg,#555,#111);border: 2px solid #888;margin: 45px auto 20px;display: flex;justify-content: center;align-items: center;font-size: 35px;font-weight: bold;}
-h1 {font-size: 26px;margin-bottom: 10px;}
-.subtitle {color: #888;margin-bottom: 30px;}
-.chatbox {background: #151515;border: 1px solid #333;border-radius: 15px;padding: 15px;min-height: 180px;text-align: left;margin-bottom: 20px;}
-#response {color: #ddd;line-height: 1.7;white-space: pre-wrap;}
-input {width: 100%;padding: 16px;background: #171717;border: 1px solid #444;border-radius: 12px;color: white;outline: none;font-size: 16px;margin-bottom: 12px;}
-button {padding: 15px;border: none;border-radius: 12px;background: #eeeeee;color: black;font-weight: bold;font-size: 15px;cursor: pointer;}
-.send {width: 100%;margin-bottom: 15px;}
-.voice {width: 75px;height: 75px;border-radius: 50%;background: #252525;border: 2px solid #777;color: white;font-size: 28px;transition: 0.3s;}
-.voice.listening {background: #ef4444;border-color: #ef4444;box-shadow: 0 0 20px #ef4444;transform: scale(1.1);}
-.apps {display: grid;grid-template-columns: repeat(3,1fr);gap: 12px;margin-top: 30px;}
-.apps button {background: #191919;color: white;border: 1px solid #444;padding: 18px 5px;}
-footer {color: #666;text-align: center;padding: 30px 10px;font-size: 12px;}
-#status{color:#00ff9d;margin:10px 0;font-size:13px;min-height:18px;}
-</style>
-</head>
-<body>
-<header>
-    <h2>HAMZA AI</h2>
-    <p>Your Personal AI Assistant</p>
-</header>
-<div class="container">
-    <div class="logo">H</div>
-    <h1>Hamza AI Assistant</h1>
-    <p class="subtitle">Your Voice. Your Commands. Your Assistant.</p>
-    <div class="chatbox"><p id="response">Assalamualaikum Hamza Sir!
-
-I am Hamza AI Assistant.
-
-How can I help you today?</p></div>
-    <div id="status"></div>
-    <input type="text" id="command" placeholder="Type your command here...">
-    <button class="send" onclick="sendCommand()">SEND COMMAND</button>
-    <button class="voice" id="micBtn" onclick="startVoice()">🎤</button>
-    <p style="color:#888;margin-top:12px">Tap microphone to speak</p>
-    <div class="apps">
-        <button onclick="openApp('https://www.youtube.com')">▶ YouTube</button>
-        <button onclick="openApp('https://www.instagram.com')">◎ Instagram</button>
-        <button onclick="openApp('https://wa.me/')">☎ WhatsApp</button>
-    </div>
-</div>
-<footer>HAMZA AI ASSISTANT<br>Personal AI Project - APK Ready</footer>
-<script>
+ <script>
 const response = document.getElementById("response");
 const statusEl = document.getElementById("status");
 const micBtn = document.getElementById("micBtn");
+let isListening = false;
+let recognition;
 
-function speak(text) {
-    if ('speechSynthesis' in window) {
-        speechSynthesis.cancel();
-        let speech = new SpeechSynthesisUtterance(text);
-        speech.lang = "hi-IN"; speech.rate = 1;
-        speechSynthesis.speak(speech);
-    }
+function speakUrdu(text) {
+    speechSynthesis.cancel();
+    let u = new SpeechSynthesisUtterance(text);
+    // اردو کے لیے ur-PK، نہ ملے تو hi-IN
+    u.lang = "ur-PK"; 
+    u.rate = 0.9;
+    // اردو آواز تلاش کرو
+    let voices = speechSynthesis.getVoices();
+    let urVoice = voices.find(v => v.lang.includes("ur") || v.lang.includes("hi"));
+    if(urVoice) u.voice = urVoice;
+    speechSynthesis.speak(u);
 }
-function isAndroidApp(){ return typeof Android !== 'undefined' || typeof AndroidInterface !== 'undefined'; }
-
-function sendCommand() {
-    let raw = document.getElementById("command").value.trim();
-    if (!raw) return;
-    let command = raw.toLowerCase();
-    response.innerText = "You: " + raw;
-
-    if (command.includes("youtube") || command.includes("یوٹیوب")) {
-        response.innerText += "\nOpening YouTube...";
-        if(command.replace("youtube","").replace("kholo","").trim().length > 3){
-            let q = command.replace("youtube","").replace("kholo","").replace("open","").trim();
-            openApp("https://www.youtube.com/results?search_query="+encodeURIComponent(q));
-        } else { openApp("https://www.youtube.com"); }
-        speak("Opening YouTube");
-    }
-    else if (command.includes("instagram")) {
-        response.innerText += "\nOpening Instagram..."; speak("Opening Instagram"); openApp("https://www.instagram.com");
-    }
-    else if (command.includes("whatsapp") || command.includes("واٹس ایپ")) {
-        response.innerText += "\nOpening WhatsApp..."; speak("Opening WhatsApp");
-        if(isAndroidApp()){
-            try{ AndroidInterface.openWhatsApp(); }catch(e){ openApp("https://wa.me/"); }
-        } else { openApp("https://wa.me/"); }
-    }
-    else if (command.includes("google") || command.includes("گوگل")) {
-        response.innerText += "\nOpening Google..."; speak("Opening Google"); openApp("https://www.google.com");
-    }
-    else if (command.includes("time") || command.includes("ٹائم")) {
-        let t = new Date().toLocaleTimeString('hi-IN'); response.innerText += "\nTime: " + t; speak("Time is " + t);
-    }
-    else if (command.includes("torch") || command.includes("ٹارچ") || command.includes("light")) {
-        response.innerText += "\nTorch feature...";
-        if(isAndroidApp()){
-            try{ AndroidInterface.toggleTorch(); response.innerText += "\nTorch toggled!"; speak("Torch toggled"); }catch(e){}
-        } else { response.innerText += "\nNote: Torch only works in APK version."; speak("Torch will work in APK version"); }
-    }
-    else if (command.includes("hello") || command.includes("salam") || command.includes("नमस्ते")) {
-        response.innerText += "\nAssalamualaikum Hamza Sir! I am ready."; speak("Assalamualaikum Hamza Sir");
-    }
-    else {
-        response.innerText += "\nCommand received: " + raw; speak("Command received");
-    }
-    document.getElementById("command").value = "";
-}
-function openApp(url) { window.open(url, "_blank"); }
 
 function startVoice() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) { response.innerText = "Voice not supported. Use Chrome."; return; }
-    const recognition = new SpeechRecognition();
-    recognition.lang = "hi-IN"; recognition.interimResults = false; recognition.continuous = false;
+    if (!SpeechRecognition) { response.innerText = "Chrome استعمال کریں"; return; }
+    
+    if(isListening){
+        // بند کرنا ہے
+        isListening = false;
+        try{ recognition.stop(); }catch{}
+        micBtn.classList.remove("listening");
+        statusEl.innerText = "مائیک بند";
+        response.innerText = "مائیک بند کر دیا";
+        speakUrdu("مائیک بند کر دیا");
+        return;
+    }
+
+    recognition = new SpeechRecognition();
+    recognition.lang = "ur-PK"; // اردو سنے گا
+    recognition.continuous = true; // اہم: آن ہی رہے گا
+    recognition.interimResults = false;
 
     recognition.onstart = function(){
-        micBtn.classList.add("listening"); statusEl.innerText = "Sun raha hun... Bolo Hamza bhai..."; response.innerText = "Listening...";
+        isListening = true;
+        micBtn.classList.add("listening");
+        statusEl.innerText = "سن رہا ہوں... آن ہے، بند کرنے کے لیے دوبارہ دبائیں";
+        response.innerText = "جی حمزہ بھائی، حکم کریں...";
+        speakUrdu("جی حمزہ بھائی، حکم کریں");
     };
-    recognition.onend = function(){ micBtn.classList.remove("listening"); statusEl.innerText = ""; };
-    recognition.onerror = function(event){
-        micBtn.classList.remove("listening");
-        if(event.error === 'not-allowed'){
-            response.innerText = "Mic Permission Denied!\nUpar 🔒 Lock icon > Site Settings > Microphone > Allow karo, phir refresh karo.";
-            alert("Mic band hai! Chrome me upar Lock icon se Microphone Allow karo.");
-        } else if(event.error === 'no-speech'){ response.innerText = "Awaz nahi aayi, dobara bolo."; }
-        else { response.innerText = "Voice error: " + event.error; }
+    recognition.onend = function(){
+        if(isListening){
+            // اگر آن ہے تو خود دوبارہ شروع ہو جائے، بیک گراؤنڈ کے لیے
+            try{ recognition.start(); }catch{}
+        } else {
+            micBtn.classList.remove("listening");
+        }
+    };
+    recognition.onerror = function(e){
+        if(e.error === 'not-allowed'){
+            response.innerText = "مائیک کی اجازت دیں! اوپر 🔒 سے Allow کریں";
+        }
     };
     recognition.onresult = function(event){
-        let command = event.results[0][0].transcript;
-        document.getElementById("command").value = command;
-        sendCommand();
+        let last = event.results.length - 1;
+        let command = event.results[last][0].transcript;
+        let cmdLower = command.toLowerCase();
+
+        // ویک ورڈ: ہائے حمزہ
+        if(cmdLower.includes("hey hamza") || cmdLower.includes("ہائے حمزہ") || cmdLower.includes("hamza")){
+            response.innerText = "آپ نے کہا: " + command;
+            document.getElementById("command").value = command;
+            sendCommandUrdu(command);
+        } else {
+            document.getElementById("command").value = command;
+            sendCommandUrdu(command);
+        }
     };
-    try{ recognition.start(); }catch(e){}
+    try{ recognition.start(); }catch{}
+}
+
+function sendCommandUrdu(raw){
+    let command = raw.toLowerCase();
+    if(command.includes("یوٹیوب") || command.includes("youtube")){
+        response.innerText += "\nیوٹیوب کھول رہا ہوں...";
+        speakUrdu("یوٹیوب کھول رہا ہوں");
+        window.open("https://www.youtube.com","_blank");
+    }
+    else if(command.includes("واٹس ایپ")){
+        response.innerText += "\nواٹس ایپ کھول رہا ہوں...";
+        speakUrdu("واٹس ایپ کھول رہا ہوں");
+        window.open("https://wa.me/","_blank");
+    }
+    else if(command.includes("ٹائم") || command.includes("وقت")){
+        let t = new Date().toLocaleTimeString('ur-PK');
+        response.innerText += "\nوقت ہے: " + t;
+        speakUrdu("وقت ہے " + t);
+    }
+    else{
+        response.innerText += "\nحکم ملا: " + raw;
+        speakUrdu("حکم مل گیا " + raw);
+    }
 }
 </script>
-</body>
-</html>
