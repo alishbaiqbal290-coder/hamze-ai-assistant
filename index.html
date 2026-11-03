@@ -1,2 +1,102 @@
 
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HAMZA AI</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#000;color:#fff;font-family:sans-serif;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:20px;text-align:center}
+.logo{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,#00f2ff,#0066ff);display:flex;align-items:center;justify-content:center;font-size:45px;font-weight:bold;margin-top:20px;box-shadow:0 0 20px #00f2ff}
+h1{margin:15px 0 5px;font-size:28px;letter-spacing:2px}
+.card{width:92%;max-width:400px;background:#111;border:1px solid #222;border-radius:20px;padding:20px;margin-top:20px}
+#voiceStatus{color:#00f2ff;font-size:16px;margin:10px;font-weight:bold}
+#assistantReply{min-height:70px;background:#000;border-radius:12px;padding:15px;margin:15px 0;color:#00ff88;border:1px solid #222;font-size:16px}
+#voiceButton, .stopBtn{width:100%;padding:15px;border-radius:12px;border:none;font-size:18px;cursor:pointer;margin:6px 0;font-weight:bold}
+#voiceButton{background:linear-gradient(135deg,#00f2ff,#0066ff);color:#fff}
+#voiceButton.listening{background:linear-gradient(135deg,#ff0040,#ff6600);animation:pulse 1s infinite}
+.stopBtn{background:#222;color:#fff;border:1px solid #444}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1)}}
+</style>
+</head>
+<body>
+<div class="logo">H</div>
+<h1>HAMZA AI</h1>
+<p>آپ کا پرسنل اردو اسسٹنٹ</p>
 
+<div class="card">
+  <h2>Hamza AI Assistant</h2>
+  <p id="voiceStatus">السلام علیکم حمزہ صاحب!</p>
+  <button id="voiceButton" onclick="startListening()">🎙️ بات کریں</button>
+  <button class="stopBtn" onclick="stopListening()">⏹️ وائس بند کریں</button>
+  <div id="assistantReply">میں آپ کا حکم سننے کے لیے تیار ہوں۔</div>
+</div>
+
+<script>
+let recognition;
+let listening = false;
+function speakUrdu(msg){
+  try{
+    speechSynthesis.cancel();
+    let s = new SpeechSynthesisUtterance(msg);
+    s.lang="ur-PK"; s.rate=0.9;
+    speechSynthesis.speak(s);
+  }catch{}
+}
+function startListening(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){ alert("Chrome استعمال کریں"); return; }
+  if(listening){ speakUrdu("میں پہلے سے سن رہا ہوں"); return; }
+  
+  recognition = new SR();
+  recognition.lang="ur-PK";
+  recognition.continuous=true;
+  recognition.interimResults=false;
+
+  recognition.onstart=()=>{
+    listening=true;
+    document.getElementById("voiceButton").classList.add("listening");
+    document.getElementById("voiceButton").innerText="🔴 سن رہا ہوں...";
+    document.getElementById("voiceStatus").innerText="حمزہ صاحب، میں سن رہا ہوں - آن ہے";
+  };
+  recognition.onresult=(e)=>{
+    let cmd = e.results[e.results.length-1][0].transcript;
+    document.getElementById("assistantReply").innerText="آپ نے کہا: "+cmd;
+    handleCommand(cmd.toLowerCase());
+  };
+  recognition.onend=()=>{
+    if(listening){ try{recognition.start();}catch{} } // آن ہی رہے گا
+  };
+  recognition.start();
+  speakUrdu("جی حمزہ صاحب حکم کریں");
+}
+function stopListening(){
+  listening=false;
+  try{ recognition.stop(); }catch{}
+  document.getElementById("voiceButton").classList.remove("listening");
+  document.getElementById("voiceButton").innerText="🎙️ بات کریں";
+  document.getElementById("voiceStatus").innerText="وائس بند ہے";
+  speakUrdu("وائس بند کر دی");
+}
+function handleCommand(c){
+  if(c.includes("youtube")||c.includes("یوٹیوب")){
+    speakUrdu("یوٹیوب کھول رہا ہوں حمزہ صاحب");
+    if(window.AndroidAssistant) window.AndroidAssistant.openApp("youtube");
+    else window.open("https://youtube.com","_blank");
+  }else if(c.includes("whatsapp")||c.includes("واٹس")){
+    speakUrdu("واٹس ایپ کھول رہا ہوں");
+    if(window.AndroidAssistant) window.AndroidAssistant.openApp("whatsapp");
+    else window.open("https://wa.me/","_blank");
+  }else if(c.includes("torch")||c.includes("ٹارچ")||c.includes("لائٹ")){
+    speakUrdu("ٹارچ آن کر رہا ہوں");
+    if(window.AndroidAssistant) window.AndroidAssistant.toggleTorch();
+  }else if(c.includes("brightness")||c.includes("برائٹنس")){
+    if(window.AndroidAssistant) window.AndroidAssistant.openBrightnessSettings();
+  }else{
+    speakUrdu("حکم مل گیا "+c);
+  }
+}
+</script>
+</body>
+</html>
