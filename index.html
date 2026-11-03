@@ -1,102 +1,127 @@
-
 <!DOCTYPE html>
 <html lang="ur" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HAMZA AI</title>
+<title>HAMZA AI SYSTEM</title>
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#000;color:#fff;font-family:sans-serif;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:20px;text-align:center}
-.logo{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,#00f2ff,#0066ff);display:flex;align-items:center;justify-content:center;font-size:45px;font-weight:bold;margin-top:20px;box-shadow:0 0 20px #00f2ff}
-h1{margin:15px 0 5px;font-size:28px;letter-spacing:2px}
-.card{width:92%;max-width:400px;background:#111;border:1px solid #222;border-radius:20px;padding:20px;margin-top:20px}
-#voiceStatus{color:#00f2ff;font-size:16px;margin:10px;font-weight:bold}
-#assistantReply{min-height:70px;background:#000;border-radius:12px;padding:15px;margin:15px 0;color:#00ff88;border:1px solid #222;font-size:16px}
-#voiceButton, .stopBtn{width:100%;padding:15px;border-radius:12px;border:none;font-size:18px;cursor:pointer;margin:6px 0;font-weight:bold}
-#voiceButton{background:linear-gradient(135deg,#00f2ff,#0066ff);color:#fff}
-#voiceButton.listening{background:linear-gradient(135deg,#ff0040,#ff6600);animation:pulse 1s infinite}
-.stopBtn{background:#222;color:#fff;border:1px solid #444}
-@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1)}}
+body{background:#050a14;color:white;font-family:Arial;text-align:center;margin:0;padding:20px}
+h1{color:#00aaff;text-shadow:0 0 15px #00aaff}
+#mic{width:120px;height:120px;background:radial-gradient(#00aaff,#004466);border-radius:50%;border:none;box-shadow:0 0 30px #00aaff;font-size:50px;margin:20px}
+#mic.listening{animation:pulse 1s infinite}
+@keyframes pulse{0%{box-shadow:0 0 20px #00aaff}50%{box-shadow:0 0 50px #00aaff}100%{box-shadow:0 0 20px #00aaff}}
+.box{background:#0f1a2e;border:1px solid #00aaff;border-radius:15px;padding:15px;margin:15px 0;min-height:50px;text-align:right}
+.btn{background:#0f1a2e;border:1px solid #00aaff;color:#00aaff;padding:10px 15px;border-radius:20px;margin:5px}
+#status{color:#00ff88}
 </style>
 </head>
 <body>
-<div class="logo">H</div>
-<h1>HAMZA AI</h1>
-<p>آپ کا پرسنل اردو اسسٹنٹ</p>
+<h1>HAMZA AI SYSTEM</h1>
+<p id="status">سسٹم تیار ہے...</p>
 
-<div class="card">
-  <h2>Hamza AI Assistant</h2>
-  <p id="voiceStatus">السلام علیکم حمزہ صاحب!</p>
-  <button id="voiceButton" onclick="startListening()">🎙️ بات کریں</button>
-  <button class="stopBtn" onclick="stopListening()">⏹️ وائس بند کریں</button>
-  <div id="assistantReply">میں آپ کا حکم سننے کے لیے تیار ہوں۔</div>
+<button id="mic">🎙️</button>
+<p>بولو حمزہ بھائی</p>
+
+<div class="box">
+<b>آپ نے کہا:</b>
+<div id="userText">...</div>
+</div>
+
+<div class="box">
+<b>حمزہ AI کا جواب:</b>
+<div id="aiText">السلام علیکم حمزہ بھائی، میں تیار ہوں۔ بولو کیا کرنا ہے؟</div>
+</div>
+
+<div>
+<button class="btn" onclick="doCommand('واٹس ایپ کھولو')">واٹس ایپ</button>
+<button class="btn" onclick="doCommand('یوٹیوب کھولو')">یوٹیوب</button>
+<button class="btn" onclick="doCommand('کال کرو')">کال</button>
+<button class="btn" onclick="doCommand('وقت بتاؤ')">وقت</button>
 </div>
 
 <script>
-let recognition;
-let listening = false;
-function speakUrdu(msg){
-  try{
-    speechSynthesis.cancel();
-    let s = new SpeechSynthesisUtterance(msg);
-    s.lang="ur-PK"; s.rate=0.9;
-    speechSynthesis.speak(s);
-  }catch{}
-}
-function startListening(){
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if(!SR){ alert("Chrome استعمال کریں"); return; }
-  if(listening){ speakUrdu("میں پہلے سے سن رہا ہوں"); return; }
-  
-  recognition = new SR();
-  recognition.lang="ur-PK";
-  recognition.continuous=true;
-  recognition.interimResults=false;
+const mic = document.getElementById('mic');
+const userText = document.getElementById('userText');
+const aiText = document.getElementById('aiText');
+const status = document.getElementById('status');
 
-  recognition.onstart=()=>{
-    listening=true;
-    document.getElementById("voiceButton").classList.add("listening");
-    document.getElementById("voiceButton").innerText="🔴 سن رہا ہوں...";
-    document.getElementById("voiceStatus").innerText="حمزہ صاحب، میں سن رہا ہوں - آن ہے";
-  };
-  recognition.onresult=(e)=>{
-    let cmd = e.results[e.results.length-1][0].transcript;
-    document.getElementById("assistantReply").innerText="آپ نے کہا: "+cmd;
-    handleCommand(cmd.toLowerCase());
-  };
-  recognition.onend=()=>{
-    if(listening){ try{recognition.start();}catch{} } // آن ہی رہے گا
-  };
-  recognition.start();
-  speakUrdu("جی حمزہ صاحب حکم کریں");
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition;
+
+function speak(text){
+  aiText.innerText = text;
+  const msg = new SpeechSynthesisUtterance(text);
+  msg.lang = 'ur-PK';
+  msg.rate = 0.9;
+  window.speechSynthesis.speak(msg);
 }
-function stopListening(){
-  listening=false;
-  try{ recognition.stop(); }catch{}
-  document.getElementById("voiceButton").classList.remove("listening");
-  document.getElementById("voiceButton").innerText="🎙️ بات کریں";
-  document.getElementById("voiceStatus").innerText="وائس بند ہے";
-  speakUrdu("وائس بند کر دی");
-}
-function handleCommand(c){
-  if(c.includes("youtube")||c.includes("یوٹیوب")){
-    speakUrdu("یوٹیوب کھول رہا ہوں حمزہ صاحب");
-    if(window.AndroidAssistant) window.AndroidAssistant.openApp("youtube");
-    else window.open("https://youtube.com","_blank");
-  }else if(c.includes("whatsapp")||c.includes("واٹس")){
-    speakUrdu("واٹس ایپ کھول رہا ہوں");
-    if(window.AndroidAssistant) window.AndroidAssistant.openApp("whatsapp");
-    else window.open("https://wa.me/","_blank");
-  }else if(c.includes("torch")||c.includes("ٹارچ")||c.includes("لائٹ")){
-    speakUrdu("ٹارچ آن کر رہا ہوں");
-    if(window.AndroidAssistant) window.AndroidAssistant.toggleTorch();
-  }else if(c.includes("brightness")||c.includes("برائٹنس")){
-    if(window.AndroidAssistant) window.AndroidAssistant.openBrightnessSettings();
-  }else{
-    speakUrdu("حکم مل گیا "+c);
+
+function doCommand(text){
+  text = text.toLowerCase();
+  userText.innerText = text;
+
+  if(text.includes('واٹس ایپ') || text.includes('whatsapp')){
+    speak('جی بھائی واٹس ایپ کھول رہا ہوں');
+    window.open('https://wa.me/', '_blank');
+  }
+  else if(text.includes('یوٹیوب') || text.includes('youtube')){
+    speak('یوٹیوب کھول رہا ہوں');
+    window.open('https://m.youtube.com', '_blank');
+  }
+  else if(text.includes('گوگل') || text.includes('google')){
+    speak('گوگل کھول رہا ہوں');
+    window.open('https://google.com', '_blank');
+  }
+  else if(text.includes('کال') || text.includes('call')){
+    speak('کال ڈائلر کھول رہا ہوں');
+    window.location.href = 'tel:';
+  }
+  else if(text.includes('وقت') || text.includes('time')){
+    let t = new Date().toLocaleTimeString('ur-PK');
+    speak('اس وقت وقت ہے ' + t);
+  }
+  else if(text.includes('تاریخ') || text.includes('date')){
+    let d = new Date().toLocaleDateString('ur-PK');
+    speak('آج کی تاریخ ہے ' + d);
+  }
+  else if(text.includes('نام کیا') || text.includes('کون ہو')){
+    speak('میں حمزہ AI سسٹم ہوں، حمزہ بھائی کا پرسنل اسسٹنٹ');
+  }
+  else if(text.includes('السلام')){
+    speak('وعلیکم السلام حمزہ بھائی، سنائیں کیا حکم ہے؟');
+  }
+  else{
+    speak('آپ نے کہا ' + text + '، میں اس پر کام کر رہا ہوں۔ اگر آپ نے ایپ کھولنے کا کہا ہے تو بتائیں کونسی ایپ کھولنی ہے؟');
   }
 }
+
+if(SpeechRecognition){
+  recognition = new SpeechRecognition();
+  recognition.lang = 'ur-PK';
+  recognition.continuous = false;
+
+  recognition.onstart = ()=>{
+    mic.classList.add('listening');
+    status.innerText = 'سن رہا ہوں...';
+  }
+  recognition.onend = ()=>{
+    mic.classList.remove('listening');
+    status.innerText = 'سسٹم تیار ہے...';
+  }
+  recognition.onresult = (e)=>{
+    let text = e.results[0][0].transcript;
+    doCommand(text);
+  }
+
+  mic.onclick = ()=> recognition.start();
+}else{
+  status.innerText = 'آپ کے براؤزر میں وائس سپورٹ نہیں، کروم استعمال کریں';
+  mic.onclick = ()=>{
+    let t = prompt('بول کر لکھیں، کیا کرنا ہے؟');
+    if(t) doCommand(t);
+  }
+}
+speak('السلام علیکم حمزہ بھائی، حمزہ AI سسٹم آن لائن ہے');
 </script>
 </body>
 </html>
