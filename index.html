@@ -1,101 +1,45 @@
- <script>
-const response = document.getElementById("response");
-const statusEl = document.getElementById("status");
-const micBtn = document.getElementById("micBtn");
 let isListening = false;
 let recognition;
 
-function speakUrdu(text) {
+function speakUrdu(text){
+  try{
     speechSynthesis.cancel();
     let u = new SpeechSynthesisUtterance(text);
-    // اردو کے لیے ur-PK، نہ ملے تو hi-IN
-    u.lang = "ur-PK"; 
-    u.rate = 0.9;
-    // اردو آواز تلاش کرو
-    let voices = speechSynthesis.getVoices();
-    let urVoice = voices.find(v => v.lang.includes("ur") || v.lang.includes("hi"));
-    if(urVoice) u.voice = urVoice;
+    u.lang = "ur-PK";
     speechSynthesis.speak(u);
+  }catch{}
 }
 
-function startVoice() {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) { response.innerText = "Chrome استعمال کریں"; return; }
-    
-    if(isListening){
-        // بند کرنا ہے
-        isListening = false;
-        try{ recognition.stop(); }catch{}
-        micBtn.classList.remove("listening");
-        statusEl.innerText = "مائیک بند";
-        response.innerText = "مائیک بند کر دیا";
-        speakUrdu("مائیک بند کر دیا");
-        return;
-    }
-
-    recognition = new SpeechRecognition();
-    recognition.lang = "ur-PK"; // اردو سنے گا
-    recognition.continuous = true; // اہم: آن ہی رہے گا
-    recognition.interimResults = false;
-
-    recognition.onstart = function(){
-        isListening = true;
-        micBtn.classList.add("listening");
-        statusEl.innerText = "سن رہا ہوں... آن ہے، بند کرنے کے لیے دوبارہ دبائیں";
-        response.innerText = "جی حمزہ بھائی، حکم کریں...";
-        speakUrdu("جی حمزہ بھائی، حکم کریں");
-    };
-    recognition.onend = function(){
-        if(isListening){
-            // اگر آن ہے تو خود دوبارہ شروع ہو جائے، بیک گراؤنڈ کے لیے
-            try{ recognition.start(); }catch{}
-        } else {
-            micBtn.classList.remove("listening");
-        }
-    };
-    recognition.onerror = function(e){
-        if(e.error === 'not-allowed'){
-            response.innerText = "مائیک کی اجازت دیں! اوپر 🔒 سے Allow کریں";
-        }
-    };
-    recognition.onresult = function(event){
-        let last = event.results.length - 1;
-        let command = event.results[last][0].transcript;
-        let cmdLower = command.toLowerCase();
-
-        // ویک ورڈ: ہائے حمزہ
-        if(cmdLower.includes("hey hamza") || cmdLower.includes("ہائے حمزہ") || cmdLower.includes("hamza")){
-            response.innerText = "آپ نے کہا: " + command;
-            document.getElementById("command").value = command;
-            sendCommandUrdu(command);
-        } else {
-            document.getElementById("command").value = command;
-            sendCommandUrdu(command);
-        }
-    };
-    try{ recognition.start(); }catch{}
+function startVoice(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){ alert("Chrome استعمال کریں"); return; }
+  
+  if(isListening){
+    isListening = false;
+    try{ recognition.stop(); }catch{}
+    document.getElementById("micBtn").classList.remove("listening");
+    document.getElementById("status").innerText = "مائیک بند ہے";
+    return;
+  }
+  recognition = new SR();
+  recognition.lang = "ur-PK";
+  recognition.onstart = function(){
+    isListening = true;
+    document.getElementById("micBtn").classList.add("listening");
+    document.getElementById("status").innerText = "سن رہا ہوں... آن ہے";
+  };
+  recognition.onend = function(){
+    document.getElementById("micBtn").classList.remove("listening");
+    isListening = false;
+  };
+  recognition.onresult = function(e){
+    let cmd = e.results[0][0].transcript;
+    document.getElementById("command").value = cmd;
+    document.getElementById("response").innerText = "آپ نے کہا: " + cmd;
+    speakUrdu("حکم مل گیا " + cmd);
+    if(cmd.includes("یوٹیوب")) window.open("https://www.youtube.com","_blank");
+    if(cmd.includes("واٹس ایپ")) window.open("https://wa.me/","_blank");
+    isListening = false;
+  };
+  recognition.start();
 }
-
-function sendCommandUrdu(raw){
-    let command = raw.toLowerCase();
-    if(command.includes("یوٹیوب") || command.includes("youtube")){
-        response.innerText += "\nیوٹیوب کھول رہا ہوں...";
-        speakUrdu("یوٹیوب کھول رہا ہوں");
-        window.open("https://www.youtube.com","_blank");
-    }
-    else if(command.includes("واٹس ایپ")){
-        response.innerText += "\nواٹس ایپ کھول رہا ہوں...";
-        speakUrdu("واٹس ایپ کھول رہا ہوں");
-        window.open("https://wa.me/","_blank");
-    }
-    else if(command.includes("ٹائم") || command.includes("وقت")){
-        let t = new Date().toLocaleTimeString('ur-PK');
-        response.innerText += "\nوقت ہے: " + t;
-        speakUrdu("وقت ہے " + t);
-    }
-    else{
-        response.innerText += "\nحکم ملا: " + raw;
-        speakUrdu("حکم مل گیا " + raw);
-    }
-}
-</script>
