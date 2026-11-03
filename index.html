@@ -1,45 +1,111 @@
-let isListening = false;
-let recognition;
 
-function speakUrdu(text){
-  try{
-    speechSynthesis.cancel();
-    let u = new SpeechSynthesisUtterance(text);
-    u.lang = "ur-PK";
-    speechSynthesis.speak(u);
-  }catch{}
+
+<!-- Hamza AI Voice Assistant Controls -->
+<section class="voice-controls">
+  <h2>Hamza AI Assistant</h2>
+  <p id="voiceStatus">السلام علیکم حمزہ صاحب!</p>
+
+  <button id="voiceButton" onclick="startListening()">
+    🎙️ بات کریں
+  </button>
+
+  <button onclick="stopListening()">
+    ⏹️ وائس بند کریں
+  </button>
+
+  <div id="assistantReply">
+    میں آپ کا حکم سننے کے لیے تیار ہوں۔
+  </div>
+</section>
+
+<script>
+let recognition;
+let listening = false;
+
+function speakUrdu(message) {
+  const speech = new SpeechSynthesisUtterance(message);
+  speech.lang = "ur-PK";
+  speech.rate = 0.9;
+  speechSynthesis.speak(speech);
 }
 
-function startVoice(){
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if(!SR){ alert("Chrome استعمال کریں"); return; }
-  
-  if(isListening){
-    isListening = false;
-    try{ recognition.stop(); }catch{}
-    document.getElementById("micBtn").classList.remove("listening");
-    document.getElementById("status").innerText = "مائیک بند ہے";
+function startListening() {
+  const SpeechRecognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    alert("آپ کے براؤزر میں وائس سپورٹ دستیاب نہیں ہے۔");
     return;
   }
-  recognition = new SR();
+
+  recognition = new SpeechRecognition();
   recognition.lang = "ur-PK";
-  recognition.onstart = function(){
-    isListening = true;
-    document.getElementById("micBtn").classList.add("listening");
-    document.getElementById("status").innerText = "سن رہا ہوں... آن ہے";
+  recognition.continuous = true;
+  recognition.interimResults = false;
+
+  recognition.onresult = function(event) {
+    const command =
+      event.results[event.results.length - 1][0].transcript;
+
+    handleCommand(command.toLowerCase());
   };
-  recognition.onend = function(){
-    document.getElementById("micBtn").classList.remove("listening");
-    isListening = false;
+
+  recognition.onerror = function() {
+    document.getElementById("voiceStatus").innerText =
+      "وائس میں مسئلہ آیا، دوبارہ کوشش کریں۔";
   };
-  recognition.onresult = function(e){
-    let cmd = e.results[0][0].transcript;
-    document.getElementById("command").value = cmd;
-    document.getElementById("response").innerText = "آپ نے کہا: " + cmd;
-    speakUrdu("حکم مل گیا " + cmd);
-    if(cmd.includes("یوٹیوب")) window.open("https://www.youtube.com","_blank");
-    if(cmd.includes("واٹس ایپ")) window.open("https://wa.me/","_blank");
-    isListening = false;
-  };
+
   recognition.start();
+  listening = true;
+
+  document.getElementById("voiceStatus").innerText =
+    "حمزہ صاحب، میں سن رہا ہوں۔";
 }
+
+function stopListening() {
+  if (recognition && listening) {
+    recognition.stop();
+  }
+
+  listening = false;
+  document.getElementById("voiceStatus").innerText =
+    "وائس بند ہے۔";
+}
+
+function handleCommand(command) {
+  if (command.includes("youtube")) {
+    speakUrdu("حمزہ صاحب، یوٹیوب کھول رہا ہوں۔");
+    if (window.AndroidAssistant) {
+      window.AndroidAssistant.openApp("youtube");
+    }
+  }
+
+  else if (command.includes("whatsapp")) {
+    speakUrdu("حمزہ صاحب، واٹس ایپ کھول رہا ہوں۔");
+    if (window.AndroidAssistant) {
+      window.AndroidAssistant.openApp("whatsapp");
+    }
+  }
+
+  else if (command.includes("torch") ||
+           command.includes("ٹارچ")) {
+    speakUrdu("حمزہ صاحب، ٹارچ کے لیے درخواست بھیج رہا ہوں۔");
+    if (window.AndroidAssistant) {
+      window.AndroidAssistant.toggleTorch();
+    }
+  }
+
+  else if (command.includes("brightness") ||
+           command.includes("برائٹنس")) {
+    speakUrdu("حمزہ صاحب، برائٹنس سیٹنگ کھول رہا ہوں۔");
+    if (window.AndroidAssistant) {
+      window.AndroidAssistant.openBrightnessSettings();
+    }
+  }
+
+  else {
+    speakUrdu("حمزہ صاحب، یہ حکم ابھی میرے پاس دستیاب نہیں ہے۔");
+  }
+}
+</script>
