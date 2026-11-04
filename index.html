@@ -16,7 +16,9 @@ h2{font-size:32px;margin:10px 0 5px}
 input{width:88%;padding:16px;border-radius:15px;border:1px solid #333;background:#111;color:#fff;font-size:18px;outline:none;text-align:center}
 .send{background:#fff;color:#000;border:none;padding:16px;border-radius:15px;width:92%;font-size:20px;font-weight:bold;margin-top:12px}
 .mic{width:70px;height:70px;border-radius:50%;background:#fff;font-size:30px;border:none;margin-top:18px}
+.mic.listening{background:#00ff88;transform:scale(1.1)}
 #status{color:#00ff88;font-size:13px;margin-top:8px}
+.unlock{background:#00aaff;color:#fff;border:none;padding:10px 18px;border-radius:20px;margin-top:10px;font-weight:bold}
 </style>
 </head>
 <body>
@@ -26,6 +28,7 @@ input{width:88%;padding:16px;border-radius:15px;border:1px solid #333;background
 <h2>Hamza AI Assistant</h2>
 <div class="sub">Your Voice. Your Commands. Your Assistant.</div>
 <div id="status">سسٹم تیار ہے...</div>
+<button class="unlock" onclick="unlockAudio()">🔊 آواز آن کرنے کے لیے یہاں دبائیں</button>
 
 <div class="box">
 <div id="userText">You: ...</div>
@@ -44,123 +47,137 @@ let userText=document.getElementById('userText');
 let aiText=document.getElementById('aiText');
 let status=document.getElementById('status');
 let femaleVoice=null;
+let audioUnlocked=false;
 
-// --- لیڈیز آواز سیٹ کرنا ---
 function loadVoices(){
-  let voices=window.speechSynthesis.getVoices();
-  // پہلے اردو لیڈیز، پھر کوئی بھی لیڈیز، پھر اردو
-  femaleVoice = voices.find(v=>v.lang.includes('ur') && v.name.toLowerCase().includes('female')) ||
-                voices.find(v=>v.lang.includes('ur') && v.name.toLowerCase().includes('google')) ||
-                voices.find(v=>v.name.toLowerCase().includes('female') && v.lang.includes('en')) ||
-                voices.find(v=>v.lang.includes('ur')) ||
-                voices.find(v=>v.name.toLowerCase().includes('samantha') || v.name.toLowerCase().includes('zira') || v.name.toLowerCase().includes('aria'));
+  let vs=window.speechSynthesis.getVoices();
+  femaleVoice = vs.find(v=>v.lang.includes('ur') && v.name.toLowerCase().includes('female')) ||
+                vs.find(v=>v.lang.includes('ur')) ||
+                vs.find(v=>v.name.toLowerCase().includes('samantha')||v.name.toLowerCase().includes('zira')||v.name.toLowerCase().includes('aria')) ||
+                vs.find(v=>v.name.toLowerCase().includes('female'));
 }
-window.speechSynthesis.onvoiceschanged=loadVoices;
-loadVoices();
+window.speechSynthesis.onvoiceschanged=loadVoices; loadVoices();
+
+// --- 1. AWAZ UNLOCK - YE SAB SE ZAROORI HAI ---
+function unlockAudio(){
+  audioUnlocked=true;
+  loadVoices();
+  // Choti si khamosh awaz se browser ko unlock karo
+  let m=new SpeechSynthesisUtterance("Assalam o Alaikum Hamza bhai, awaz on ho gai hai");
+  m.lang='ur-PK'; m.pitch=1.3; m.rate=0.92; if(femaleVoice) m.voice=femaleVoice;
+  window.speechSynthesis.cancel(); window.speechSynthesis.speak(m);
+  status.innerText="✅ آواز آن ہو گئی - اب بولو";
+  aiText.innerText="آواز آن ہو گئی ہے حمزہ بھائی، اب حکم کریں";
+}
 
 function speak(t){
   aiText.innerText=t;
+  if(!audioUnlocked){
+    // Agar unlock nahi hua to bhi koshish karo
+    audioUnlocked=true;
+  }
   try{
     window.speechSynthesis.cancel();
     let m=new SpeechSynthesisUtterance(t);
-    m.lang='ur-PK';
-    m.rate=0.92;
-    m.pitch=1.3; // لیڈیز والی آواز کے لیے پچ اونچی
+    m.lang='ur-PK'; m.rate=0.92; m.pitch=1.3;
     if(femaleVoice) m.voice=femaleVoice;
     window.speechSynthesis.speak(m);
-  }catch(e){}
+  }catch(e){ console.log(e); }
 }
 
 function fromInput(){
   let v=document.getElementById('txt').value;
-  if(!v.trim()){speak("پہلے کچھ لکھیں تو سہی حمزہ بھائی");return;}
-  doCommand(v);
+  if(!v.trim()){ speak("پہلے کچھ لکھیں تو سہی حمزہ بھائی"); return; }
+  let cmd=v; // Pehle save karo, phir clear karo - Yahi bug tha
   document.getElementById('txt').value="";
+  doCommand(cmd);
+}
+
+// --- 2. APPS CONTROL - INTENT WALA TAREEQA ---
+function openApp(intentUrl, webUrl){
+  // Pehle Android App kholne ki koshish, na khule to website
+  try{ window.location.href=intentUrl; }catch(e){}
+  setTimeout(()=>{ window.open(webUrl,'_blank'); },1200);
 }
 
 function doCommand(raw){
   let text=raw.toLowerCase().trim();
   userText.innerText="You: "+raw;
+  status.innerText="Command mila: "+raw;
 
-  // --- 1. ایپ کھولنا ---
   if(text.includes('whatsapp')||text.includes('واٹس')){
     speak("جی حمزہ بھائی، واٹس ایپ کھول رہی ہوں");
-    setTimeout(()=>window.open('https://wa.me/','_blank'),800);
+    openApp('intent://send#Intent;scheme=whatsapp;package=com.whatsapp;end','https://wa.me/');
   }
   else if(text.includes('youtube')||text.includes('یوٹیوب')){
     speak("جی، یوٹیوب کھول رہی ہوں");
-    setTimeout(()=>window.open('https://m.youtube.com','_blank'),800);
+    openApp('intent://www.youtube.com#Intent;scheme=https;package=com.google.android.youtube;end','https://m.youtube.com');
   }
   else if(text.includes('facebook')||text.includes('فیس')){
     speak("فیس بک کھول رہی ہوں");
-    setTimeout(()=>window.open('https://m.facebook.com','_blank'),800);
+    openApp('intent://facebook.com#Intent;scheme=https;package=com.facebook.katana;end','https://m.facebook.com');
   }
   else if(text.includes('tiktok')||text.includes('ٹک')){
     speak("ٹک ٹاک کھول رہی ہوں");
-    setTimeout(()=>window.open('https://www.tiktok.com','_blank'),800);
+    openApp('intent://#Intent;scheme=snssdk1128;package=com.zhiliaoapp.musically;end','https://www.tiktok.com');
+  }
+  else if(text.includes('camera')||text.includes('کیمرہ')){
+    speak("کیمرہ کھول رہی ہوں");
+    openApp('intent://#Intent;action=android.media.action.IMAGE_CAPTURE;end','https://google.com');
+  }
+  else if(text.includes('gallery')||text.includes('گیلری')||text.includes('photo')){
+    speak("گیلری کھول رہی ہوں");
+    openApp('intent://#Intent;action=android.intent.action.VIEW;type=image/*;end','https://google.com');
+  }
+  else if(text.includes('setting')||text.includes('سیٹنگ')){
+    speak("سیٹنگ کھول رہی ہوں");
+    openApp('intent://#Intent;action=android.settings.SETTINGS;end','https://google.com');
+  }
+  else if(text.includes('call')||text.includes('کال')||text.includes('sister')||text.includes('bhai')||text.includes('amma')||text.includes('abu')){
+    // Sister ko call lgo - Number nikalna
+    let name=raw.replace(/call|karo|ko|lgo|lagao/gi,"").trim();
+    speak("جی حمزہ بھائی، "+name+" کو کال لگا رہی ہوں، ڈائلر کھول رہی ہوں");
+    setTimeout(()=>{ window.location.href="tel:"; },800);
   }
   else if(text.includes('google')||text.includes('گوگل')){
     speak("گوگل کھول رہی ہوں");
-    setTimeout(()=>window.open('https://google.com','_blank'),800);
+    window.open('https://google.com','_blank');
   }
-  else if(text.includes('call')||text.includes('کال')){
-    speak("کال ڈائلر کھول رہی ہوں");
-    setTimeout(()=>window.location.href="tel:",800);
-  }
-
-  // --- 2. ریسرچ کرنا ---
-  else if(text.includes('research')||text.includes('ریسرچ')||text.includes('search')||text.includes('تلاش')||text.includes('کے بارے میں')||text.includes('ka matlab')||text.includes('کیا ہے')){
-    // "پاکستان کے بارے میں" سے "پاکستان" نکالنا
-    let q=raw.replace(/research|ریسرچ|search|تلاش|کے بارے میں|کے بارے|بتاؤ|batao|kya hai|کیا ہے/gi,"").trim();
-    if(!q) q=raw;
-    speak("حمزہ بھائی، "+q+" کے بارے میں ریسرچ کر رہی ہوں، یہ دیکھیں");
-    setTimeout(()=>window.open('https://www.google.com/search?q='+encodeURIComponent(q),'_blank'),1000);
-  }
-
-  // --- 3. وقت، تاریخ، بیٹری ---
   else if(text.includes('waqt')||text.includes('وقت')||text.includes('time')||text.includes('baj')){
     speak("حمزہ بھائی، اس وقت وقت ہے "+new Date().toLocaleTimeString('ur-PK'));
   }
-  else if(text.includes('tareekh')||text.includes('تاریخ')||text.includes('date')){
-    speak("آج کی تاریخ ہے "+new Date().toLocaleDateString('ur-PK'));
+  else if(text.includes('research')||text.includes('ریسرچ')||text.includes('کے بارے')||text.includes('کیا ہے')||text.includes('matlab')){
+    let q=raw.replace(/research|ریسرچ|کے بارے میں|بتاؤ|batao|کیا ہے/gi,"").trim();
+    speak("حمزہ بھائی، "+q+" کے بارے میں ریسرچ کر رہی ہوں");
+    setTimeout(()=>window.open('https://www.google.com/search?q='+encodeURIComponent(q),'_blank'),800);
   }
-  else if(text.includes('battery')||text.includes('بیٹری')){
-    if(navigator.getBattery){navigator.getBattery().then(b=>speak("آپ کے موبائل میں "+Math.round(b.level*100)+" فیصد بیٹری ہے"))}else{speak("بیٹری ٹھیک ہے حمزہ بھائی")}
-  }
-
-  // --- 4. بات چیت اردو میں ---
   else if(text.includes('salam')||text.includes('سلام')||text.includes('hi')||text.includes('hello')||text.includes('hy')){
-    speak("وعلیکم السلام حمزہ بھائی، میں آپ کی حمزہ اے آئی ہوں، سنائیں کیا حکم ہے؟ ریسرچ کرنی ہے یا کوئی ایپ کھولنی ہے؟");
+    speak("وعلیکم السلام حمزہ بھائی، میں آپ کی حمزہ اے آئی ہوں، سنائیں کیا حکم ہے؟");
   }
-  else if(text.includes('naam')||text.includes('نام')||text.includes('kon ho')||text.includes('کون')){
-    speak("میں حمزہ اے آئی ہوں، آپ کی پرسنل اسسٹنٹ، میں اردو میں آپ کے سارے کام کر سکتی ہوں");
-  }
-  else if(text.includes('kesi ho')||text.includes('کیسی')||text.includes('kaisi')){
-    speak("میں بالکل ٹھیک ہوں حمزہ بھائی، آپ سنائیں، آپ کیسے ہیں؟");
-  }
-  else if(text.includes('shukriya')||text.includes('شکریہ')||text.includes('thank')){
-    speak("کوئی بات نہیں حمزہ بھائی، یہ تو میرا کام ہے");
+  else if(text.includes('kesi ho')||text.includes('کیسی')){
+    speak("میں بالکل ٹھیک ہوں حمزہ بھائی، آپ سنائیں");
   }
   else{
-    // اگر کوئی بھی کمانڈ نہ ملے تو اس کو ریسرچ سمجھ کر گوگل پر کھولو
     speak("آپ نے کہا "+raw+"، میں اس کے بارے میں ریسرچ کر رہی ہوں");
-    setTimeout(()=>window.open('https://www.google.com/search?q='+encodeURIComponent(raw),'_blank'),1000);
+    setTimeout(()=>window.open('https://www.google.com/search?q='+encodeURIComponent(raw),'_blank'),800);
   }
 }
 
-// --- وائس سننا - اردو ---
+// --- 3. MIC FIX ---
 let SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 if(SR){
-  let rec=new SR(); rec.lang='ur-PK';
-  rec.onresult=(e)=>doCommand(e.results[0][0].transcript);
-  rec.onerror=(e)=>{status.innerText="مائیک کی اجازت دیں، یا لکھ کر کمانڈ دیں"};
-  document.getElementById('micBtn').onclick=()=>{try{rec.start();status.innerText="سن رہی ہوں... بولیے";}catch(e){}};
+  let rec=new SR(); rec.lang='ur-PK'; rec.continuous=false;
+  rec.onstart=()=>{ document.getElementById('micBtn').classList.add('listening'); status.innerText="سن رہی ہوں... بولیے"; };
+  rec.onend=()=>{ document.getElementById('micBtn').classList.remove('listening'); };
+  rec.onerror=(e)=>{ status.innerText="Mic Error: "+e.error+" - Chrome me kholo aur Allow dabao"; speak("مائیک کی اجازت نہیں ملی، کروم میں کھول کر Allow دبائیں"); };
+  rec.onresult=(e)=>{ doCommand(e.results[0][0].transcript); };
+  document.getElementById('micBtn').onclick=()=>{
+    if(!audioUnlocked) unlockAudio();
+    try{ rec.start(); }catch(e){ rec.stop(); setTimeout(()=>rec.start(),300); }
+  };
 }else{
-  document.getElementById('micBtn').onclick=()=>speak("اس براؤزر میں وائس نہیں ہے، لکھ کر کمانڈ دیں");
+  document.getElementById('micBtn').onclick=()=>speak("اس ایپ میں مائیک نہیں چلے گا، کروم میں کھولیں");
 }
-
-// پہلی بار آن ہوتے ہی لیڈیز آواز میں بولے
-setTimeout(()=>{ loadVoices(); speak("السلام علیکم حمزہ بھائی، میں حمزہ اے آئی ہوں، آپ کی پرسنل اسسٹنٹ، میں اردو میں آپ کے سارے کام کر سکتی ہوں، حکم کریں"); },800);
 </script>
 </body>
 </html>
