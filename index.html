@@ -1,178 +1,326 @@
 <!DOCTYPE html>
-<html lang="ur" dir="rtl">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>HAMZA AI - VVIP SYSTEM</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hamza AI Assistant</title>
+
 <style>
-:root{--blue:#00aaff;--bg:#050a14}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:white;font-family:system-ui;text-align:center;overflow-x:hidden}
-.top{padding:20px 0 10px}
-.logo{width:90px;height:90px;background:radial-gradient(circle at 30% 30%, #00d4ff, #0040ff);border-radius:50%;margin:auto;display:flex;align-items:center;justify-content:center;font-size:45px;font-weight:bold;box-shadow:0 0 40px var(--blue);border:2px solid var(--blue)}
-h1{margin:10px 0 5px;color:white;letter-spacing:2px}
-.sub{color:#aaa;font-size:14px}
-.device-info{background:#0f1a2e;border:1px solid #1a2a4a;border-radius:12px;padding:10px;margin:15px;font-size:12px;display:flex;justify-content:space-around;color:var(--blue)}
-.power-area{display:flex;gap:15px;justify-content:center;margin:15px}
-.power-btn{flex:1;max-width:150px;padding:15px;border-radius:15px;border:2px solid var(--blue);font-size:18px;font-weight:bold;cursor:pointer}
-#onBtn{background:var(--blue);color:white;box-shadow:0 0 20px var(--blue)}
-#offBtn{background:#1a1a1a;color:#888;border-color:#444}
-#offBtn.active{background:#ff0033;color:white;border-color:#ff0033;box-shadow:0 0 20px #ff0033}
-.mic-wrap{margin:20px 0}
-#mic{width:130px;height:130px;border-radius:50%;border:none;background:radial-gradient(#00aaff,#002a5a);font-size:50px;box-shadow:0 0 30px var(--blue);transition:0.2s}
-#mic.listening{animation:pulse 1s infinite;transform:scale(1.1)}
-@keyframes pulse{0%{box-shadow:0 0 20px var(--blue)}50%{box-shadow:0 0 60px var(--blue)}100%{box-shadow:0 0 20px var(--blue)}}
-.box{background:#0f1a2e;border:1px solid #00aaff55;border-radius:15px;padding:12px;margin:12px;text-align:right;min-height:55px}
-.box b{color:var(--blue);font-size:12px}
-#userText{color:white;margin-top:5px}
-#aiText{color:#00ff88;margin-top:5px}
-#status{color:#00ff88;font-size:13px;margin:5px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px}
-.small-btn{background:#102040;border:1px solid var(--blue);color:var(--blue);padding:10px;border-radius:10px;font-size:13px}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #080808;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+header {
+    padding: 22px;
+    background: #111;
+    border-bottom: 1px solid #333;
+}
+
+header h2 {
+    color: #ffffff;
+    font-size: 23px;
+}
+
+header p {
+    color: #888;
+    margin-top: 6px;
+}
+
+.container {
+    padding: 20px;
+    text-align: center;
+}
+
+.logo {
+    width: 85px;
+    height: 85px;
+    border-radius: 50%;
+    background: linear-gradient(135deg,#555,#111);
+    border: 2px solid #888;
+    margin: 45px auto 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 35px;
+    font-weight: bold;
+}
+
+h1 {
+    font-size: 26px;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: #888;
+    margin-bottom: 30px;
+}
+
+.chatbox {
+    background: #151515;
+    border: 1px solid #333;
+    border-radius: 15px;
+    padding: 15px;
+    min-height: 180px;
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+#response {
+    color: #ddd;
+    line-height: 1.7;
+    white-space: pre-wrap;
+}
+
+input {
+    width: 100%;
+    padding: 16px;
+    background: #171717;
+    border: 1px solid #444;
+    border-radius: 12px;
+    color: white;
+    outline: none;
+    font-size: 16px;
+    margin-bottom: 12px;
+}
+
+button {
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    background: #eeeeee;
+    color: black;
+    font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.send {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.voice {
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+    background: #252525;
+    border: 2px solid #777;
+    color: white;
+    font-size: 28px;
+}
+
+.apps {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 12px;
+    margin-top: 30px;
+}
+
+.apps button {
+    background: #191919;
+    color: white;
+    border: 1px solid #444;
+    padding: 18px 5px;
+}
+
+footer {
+    color: #666;
+    text-align: center;
+    padding: 30px 10px;
+    font-size: 12px;
+}
 </style>
 </head>
+
 <body>
 
-<div class="top">
-<div class="logo">H</div>
-<h1>HAMZA AI</h1>
-<div class="sub">آپ کا پرسنل اردو اسسٹنٹ</div>
+<header>
+    <h2>HAMZA AI</h2>
+    <p>Your Personal AI Assistant</p>
+</header>
+
+<div class="container">
+
+    <div class="logo">H</div>
+
+    <h1>Hamza AI Assistant</h1>
+
+    <p class="subtitle">
+        Your Voice. Your Commands. Your Assistant.
+    </p>
+
+    <div class="chatbox">
+        <p id="response">
+            Assalamualaikum Hamza Sir!
+
+            I am Hamza AI Assistant.
+
+            How can I help you today?
+        </p>
+    </div>
+
+    <input
+        type="text"
+        id="command"
+        placeholder="Type your command here..."
+    >
+
+    <button class="send" onclick="sendCommand()">
+        SEND COMMAND
+    </button>
+
+    <button class="voice" onclick="startVoice()">
+        🎤
+    </button>
+
+    <p style="color:#888;margin-top:12px">
+        Tap microphone to speak
+    </p>
+
+    <div class="apps">
+
+        <button onclick="openApp('https://www.youtube.com')">
+            ▶ YouTube
+        </button>
+
+        <button onclick="openApp('https://www.instagram.com')">
+            ◎ Instagram
+        </button>
+
+        <button onclick="openApp('https://www.whatsapp.com')">
+            ☎ WhatsApp
+        </button>
+
+    </div>
+
 </div>
 
-<div class="device-info">
-<span id="d1">Infinix Smart 6</span>
-<span id="d2">Android 11</span>
-<span id="d3">3/64 GB</span>
-</div>
-
-<div class="power-area">
-<button id="onBtn" class="power-btn" onclick="powerOn()">ON 🔵</button>
-<button id="offBtn" class="power-btn" onclick="powerOff()">OFF</button>
-</div>
-
-<div id="status">سسٹم بند ہے، ON دبائیں</div>
-
-<div class="mic-wrap">
-<button id="mic">🎙️</button>
-<div style="font-size:12px;color:#888;margin-top:8px">بولو حمزہ بھائی</div>
-</div>
-
-<div class="box"><b>آپ نے کہا:</b><div id="userText">...</div></div>
-<div class="box"><b>حمزہ AI:</b><div id="aiText">میں تیار ہوں</div></div>
-
-<div class="grid">
-<button class="small-btn" onclick="doCommand('واٹس ایپ کھولو')">واٹس ایپ</button>
-<button class="small-btn" onclick="doCommand('یوٹیوب کھولو')">یوٹیوب</button>
-<button class="small-btn" onclick="doCommand('کال کرو')">کال ڈائلر</button>
-<button class="small-btn" onclick="doCommand('سیٹنگ کھولو')">سیٹنگ</button>
-<button class="small-btn" onclick="doCommand('وقت بتاؤ')">وقت بتاؤ</button>
-<button class="small-btn" onclick="doCommand('بیٹری بتاؤ')">بیٹری</button>
-</div>
+<footer>
+    HAMZA AI ASSISTANT<br>
+    Personal AI Project
+</footer>
 
 <script>
-// ===== HAMZA AI VVIP COMBINED SYSTEM =====
-let isOn = false;
-let tts = window.speechSynthesis;
-const mic = document.getElementById('mic');
-const userText = document.getElementById('userText');
-const aiText = document.getElementById('aiText');
-const status = document.getElementById('status');
-const onBtn = document.getElementById('onBtn');
-const offBtn = document.getElementById('offBtn');
 
-function speak(text){
-  if(!isOn) return;
-  aiText.innerText = text;
-  tts.cancel();
-  let msg = new SpeechSynthesisUtterance(text);
-  msg.lang = 'ur-PK';
-  msg.rate = 0.85;
-  msg.pitch = 1;
-  tts.speak(msg);
-  // Background Notification Simulation
-  if(navigator.vibrate) navigator.vibrate(100);
+const response = document.getElementById("response");
+
+function speak(text) {
+    if ('speechSynthesis' in window) {
+        speechSynthesis.cancel();
+
+        let speech = new SpeechSynthesisUtterance(text);
+
+        speech.lang = "hi-IN";
+        speech.rate = 1;
+
+        speechSynthesis.speak(speech);
+    }
 }
 
-function powerOn(){
-  isOn = true;
-  onBtn.style.boxShadow = "0 0 30px #00aaff";
-  offBtn.classList.remove('active');
-  status.innerText = "🟢 حمزہ AI آن لائن ہے - بیک گراؤنڈ میں چل رہا ہے";
-  speak("السلام علیکم حمزہ بھائی، حمزہ اے آئی سسٹم آن ہو گیا ہے۔ میں آپ کے موبائل انفینکس سمارٹ سکس پر تیار ہوں۔ حکم کریں کیا کرنا ہے؟");
-  // Background Service Simulation
-  localStorage.setItem('hamza_ai_on','true');
-  if('serviceWorker' in navigator){ status.innerText += " | بیک گراؤنڈ ایکٹیو"; }
+function sendCommand() {
+
+    let command = document.getElementById("command")
+        .value.trim().toLowerCase();
+
+    if (!command) return;
+
+    response.innerText = "You: " + command;
+
+    if (command.includes("youtube")) {
+
+        response.innerText += "\nOpening YouTube...";
+        speak("Opening YouTube");
+        openApp("https://www.youtube.com");
+
+    }
+
+    else if (command.includes("instagram")) {
+
+        response.innerText += "\nOpening Instagram...";
+        speak("Opening Instagram");
+        openApp("https://www.instagram.com");
+
+    }
+
+    else if (command.includes("whatsapp")) {
+
+        response.innerText += "\nOpening WhatsApp...";
+        speak("Opening WhatsApp");
+        openApp("https://www.whatsapp.com");
+
+    }
+
+    else if (command.includes("hello") ||
+             command.includes("salam") ||
+             command.includes("नमस्ते")) {
+
+        response.innerText += "\nAssalamualaikum Hamza Sir!";
+        speak("Assalamualaikum Hamza Sir");
+
+    }
+
+    else {
+
+        response.innerText +=
+        "\nI am ready to receive your command. AI connection will be added in the next version.";
+
+        speak("I am ready for your command");
+
+    }
+
+    document.getElementById("command").value = "";
 }
 
-function powerOff(){
-  isOn = false;
-  tts.cancel();
-  offBtn.classList.add('active');
-  status.innerText = "🔴 سسٹم بند ہے";
-  aiText.innerText = "سسٹم بند ہو گیا";
-  localStorage.setItem('hamza_ai_on','false');
+function openApp(url) {
+    window.open(url, "_blank");
 }
 
-function doCommand(raw){
-  if(!isOn){ speak("پہلے سسٹم آن کریں"); return; }
-  let text = raw.toLowerCase();
-  userText.innerText = raw;
+function startVoice() {
 
-  if(text.includes('واٹس ایپ') || text.includes('whatsapp')){
-    speak("جی بھائی واٹس ایپ کھول رہا ہوں");
-    setTimeout(()=> window.open('https://wa.me/','_blank'), 1000);
-  }
-  else if(text.includes('یوٹیوب')){
-    speak("یوٹیوب کھول رہا ہوں");
-    setTimeout(()=> window.open('https://m.youtube.com','_blank'), 1000);
-  }
-  else if(text.includes('گوگل')){
-    speak("گوگل کھول رہا ہوں");
-    setTimeout(()=> window.open('https://google.com','_blank'), 800);
-  }
-  else if(text.includes('کال') || text.includes('ڈائل')){
-    speak("کال ڈائلر کھول رہا ہوں حمزہ بھائی");
-    window.location.href = "tel:";
-  }
-  else if(text.includes('سیٹنگ') || text.includes('setting')){
-    speak("موبائل کی سیٹنگ کھولنے کی کوشش کر رہا ہوں");
-    window.open('about:settings','_blank');
-  }
-  else if(text.includes('وقت')){
-    let t = new Date().toLocaleTimeString('ur-PK');
-    speak("اس وقت وقت ہے " + t);
-  }
-  else if(text.includes('بیٹری') || text.includes('battery')){
-    if(navigator.getBattery){
-      navigator.getBattery().then(b=>{
-        speak("آپ کے موبائل میں " + Math.round(b.level*100) + " فیصد بیٹری باقی ہے");
-      });
-    }else{ speak("آپ کے موبائل انفینکس سمارٹ سکس میں بیٹری ٹھیک ہے"); }
-  }
-  else if(text.includes('نام') || text.includes('کون')){
-    speak("میں حمزہ اے آئی ہوں، حمزہ بھائی کا وی وی آئی پی پرسنل اسسٹنٹ، اینڈرائیڈ گیارہ کے لیے بنایا گیا");
-  }
-  else{
-    speak("آپ نے کہا " + raw + "۔ میں سمجھ گیا ہوں، اس پر کام کر رہا ہوں۔");
-  }
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+
+        response.innerText =
+        "Voice recognition is not supported in this browser.";
+
+        return;
+    }
+
+    const recognition = new SpeechRecognition();
+
+    recognition.lang = "hi-IN";
+    recognition.interimResults = false;
+
+    recognition.onresult = function(event) {
+
+        let command =
+        event.results[0][0].transcript;
+
+        document.getElementById("command").value = command;
+
+        sendCommand();
+    };
+
+    recognition.onerror = function() {
+        response.innerText =
+        "Voice recognition failed. Please try again.";
+    };
+
+    recognition.start();
 }
 
-// Voice Recognition
-const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-let rec;
-if(SR){
-  rec = new SR();
-  rec.lang = 'ur-PK';
-  rec.onstart = ()=>{ mic.classList.add('listening'); status.innerText = "سن رہا ہوں... بولو"; }
-  rec.onend = ()=>{ mic.classList.remove('listening'); if(isOn) status.innerText = "🟢 آن لائن - حکم کریں"; }
-  rec.onresult = (e)=>{ doCommand(e.results[0][0].transcript); }
-  mic.onclick = ()=>{ if(!isOn){ speak("پہلے آن کا بٹن دبائیں"); return; } rec.start(); }
-}else{
-  mic.onclick = ()=>{ let t=prompt("کیا کرنا ہے لکھیں:"); if(t) doCommand(t); }
-}
-
-// Auto resume background
-if(localStorage.getItem('hamza_ai_on')=='true'){ powerOn(); }
 </script>
+
 </body>
 </html>
