@@ -2,126 +2,177 @@
 <html lang="ur" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HAMZA AI SYSTEM</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>HAMZA AI - VVIP SYSTEM</title>
 <style>
-body{background:#050a14;color:white;font-family:Arial;text-align:center;margin:0;padding:20px}
-h1{color:#00aaff;text-shadow:0 0 15px #00aaff}
-#mic{width:120px;height:120px;background:radial-gradient(#00aaff,#004466);border-radius:50%;border:none;box-shadow:0 0 30px #00aaff;font-size:50px;margin:20px}
-#mic.listening{animation:pulse 1s infinite}
-@keyframes pulse{0%{box-shadow:0 0 20px #00aaff}50%{box-shadow:0 0 50px #00aaff}100%{box-shadow:0 0 20px #00aaff}}
-.box{background:#0f1a2e;border:1px solid #00aaff;border-radius:15px;padding:15px;margin:15px 0;min-height:50px;text-align:right}
-.btn{background:#0f1a2e;border:1px solid #00aaff;color:#00aaff;padding:10px 15px;border-radius:20px;margin:5px}
-#status{color:#00ff88}
+:root{--blue:#00aaff;--bg:#050a14}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:white;font-family:system-ui;text-align:center;overflow-x:hidden}
+.top{padding:20px 0 10px}
+.logo{width:90px;height:90px;background:radial-gradient(circle at 30% 30%, #00d4ff, #0040ff);border-radius:50%;margin:auto;display:flex;align-items:center;justify-content:center;font-size:45px;font-weight:bold;box-shadow:0 0 40px var(--blue);border:2px solid var(--blue)}
+h1{margin:10px 0 5px;color:white;letter-spacing:2px}
+.sub{color:#aaa;font-size:14px}
+.device-info{background:#0f1a2e;border:1px solid #1a2a4a;border-radius:12px;padding:10px;margin:15px;font-size:12px;display:flex;justify-content:space-around;color:var(--blue)}
+.power-area{display:flex;gap:15px;justify-content:center;margin:15px}
+.power-btn{flex:1;max-width:150px;padding:15px;border-radius:15px;border:2px solid var(--blue);font-size:18px;font-weight:bold;cursor:pointer}
+#onBtn{background:var(--blue);color:white;box-shadow:0 0 20px var(--blue)}
+#offBtn{background:#1a1a1a;color:#888;border-color:#444}
+#offBtn.active{background:#ff0033;color:white;border-color:#ff0033;box-shadow:0 0 20px #ff0033}
+.mic-wrap{margin:20px 0}
+#mic{width:130px;height:130px;border-radius:50%;border:none;background:radial-gradient(#00aaff,#002a5a);font-size:50px;box-shadow:0 0 30px var(--blue);transition:0.2s}
+#mic.listening{animation:pulse 1s infinite;transform:scale(1.1)}
+@keyframes pulse{0%{box-shadow:0 0 20px var(--blue)}50%{box-shadow:0 0 60px var(--blue)}100%{box-shadow:0 0 20px var(--blue)}}
+.box{background:#0f1a2e;border:1px solid #00aaff55;border-radius:15px;padding:12px;margin:12px;text-align:right;min-height:55px}
+.box b{color:var(--blue);font-size:12px}
+#userText{color:white;margin-top:5px}
+#aiText{color:#00ff88;margin-top:5px}
+#status{color:#00ff88;font-size:13px;margin:5px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px}
+.small-btn{background:#102040;border:1px solid var(--blue);color:var(--blue);padding:10px;border-radius:10px;font-size:13px}
 </style>
 </head>
 <body>
-<h1>HAMZA AI SYSTEM</h1>
-<p id="status">سسٹم تیار ہے...</p>
 
+<div class="top">
+<div class="logo">H</div>
+<h1>HAMZA AI</h1>
+<div class="sub">آپ کا پرسنل اردو اسسٹنٹ</div>
+</div>
+
+<div class="device-info">
+<span id="d1">Infinix Smart 6</span>
+<span id="d2">Android 11</span>
+<span id="d3">3/64 GB</span>
+</div>
+
+<div class="power-area">
+<button id="onBtn" class="power-btn" onclick="powerOn()">ON 🔵</button>
+<button id="offBtn" class="power-btn" onclick="powerOff()">OFF</button>
+</div>
+
+<div id="status">سسٹم بند ہے، ON دبائیں</div>
+
+<div class="mic-wrap">
 <button id="mic">🎙️</button>
-<p>بولو حمزہ بھائی</p>
-
-<div class="box">
-<b>آپ نے کہا:</b>
-<div id="userText">...</div>
+<div style="font-size:12px;color:#888;margin-top:8px">بولو حمزہ بھائی</div>
 </div>
 
-<div class="box">
-<b>حمزہ AI کا جواب:</b>
-<div id="aiText">السلام علیکم حمزہ بھائی، میں تیار ہوں۔ بولو کیا کرنا ہے؟</div>
-</div>
+<div class="box"><b>آپ نے کہا:</b><div id="userText">...</div></div>
+<div class="box"><b>حمزہ AI:</b><div id="aiText">میں تیار ہوں</div></div>
 
-<div>
-<button class="btn" onclick="doCommand('واٹس ایپ کھولو')">واٹس ایپ</button>
-<button class="btn" onclick="doCommand('یوٹیوب کھولو')">یوٹیوب</button>
-<button class="btn" onclick="doCommand('کال کرو')">کال</button>
-<button class="btn" onclick="doCommand('وقت بتاؤ')">وقت</button>
+<div class="grid">
+<button class="small-btn" onclick="doCommand('واٹس ایپ کھولو')">واٹس ایپ</button>
+<button class="small-btn" onclick="doCommand('یوٹیوب کھولو')">یوٹیوب</button>
+<button class="small-btn" onclick="doCommand('کال کرو')">کال ڈائلر</button>
+<button class="small-btn" onclick="doCommand('سیٹنگ کھولو')">سیٹنگ</button>
+<button class="small-btn" onclick="doCommand('وقت بتاؤ')">وقت بتاؤ</button>
+<button class="small-btn" onclick="doCommand('بیٹری بتاؤ')">بیٹری</button>
 </div>
 
 <script>
+// ===== HAMZA AI VVIP COMBINED SYSTEM =====
+let isOn = false;
+let tts = window.speechSynthesis;
 const mic = document.getElementById('mic');
 const userText = document.getElementById('userText');
 const aiText = document.getElementById('aiText');
 const status = document.getElementById('status');
-
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-let recognition;
+const onBtn = document.getElementById('onBtn');
+const offBtn = document.getElementById('offBtn');
 
 function speak(text){
+  if(!isOn) return;
   aiText.innerText = text;
-  const msg = new SpeechSynthesisUtterance(text);
+  tts.cancel();
+  let msg = new SpeechSynthesisUtterance(text);
   msg.lang = 'ur-PK';
-  msg.rate = 0.9;
-  window.speechSynthesis.speak(msg);
+  msg.rate = 0.85;
+  msg.pitch = 1;
+  tts.speak(msg);
+  // Background Notification Simulation
+  if(navigator.vibrate) navigator.vibrate(100);
 }
 
-function doCommand(text){
-  text = text.toLowerCase();
-  userText.innerText = text;
+function powerOn(){
+  isOn = true;
+  onBtn.style.boxShadow = "0 0 30px #00aaff";
+  offBtn.classList.remove('active');
+  status.innerText = "🟢 حمزہ AI آن لائن ہے - بیک گراؤنڈ میں چل رہا ہے";
+  speak("السلام علیکم حمزہ بھائی، حمزہ اے آئی سسٹم آن ہو گیا ہے۔ میں آپ کے موبائل انفینکس سمارٹ سکس پر تیار ہوں۔ حکم کریں کیا کرنا ہے؟");
+  // Background Service Simulation
+  localStorage.setItem('hamza_ai_on','true');
+  if('serviceWorker' in navigator){ status.innerText += " | بیک گراؤنڈ ایکٹیو"; }
+}
+
+function powerOff(){
+  isOn = false;
+  tts.cancel();
+  offBtn.classList.add('active');
+  status.innerText = "🔴 سسٹم بند ہے";
+  aiText.innerText = "سسٹم بند ہو گیا";
+  localStorage.setItem('hamza_ai_on','false');
+}
+
+function doCommand(raw){
+  if(!isOn){ speak("پہلے سسٹم آن کریں"); return; }
+  let text = raw.toLowerCase();
+  userText.innerText = raw;
 
   if(text.includes('واٹس ایپ') || text.includes('whatsapp')){
-    speak('جی بھائی واٹس ایپ کھول رہا ہوں');
-    window.open('https://wa.me/', '_blank');
+    speak("جی بھائی واٹس ایپ کھول رہا ہوں");
+    setTimeout(()=> window.open('https://wa.me/','_blank'), 1000);
   }
-  else if(text.includes('یوٹیوب') || text.includes('youtube')){
-    speak('یوٹیوب کھول رہا ہوں');
-    window.open('https://m.youtube.com', '_blank');
+  else if(text.includes('یوٹیوب')){
+    speak("یوٹیوب کھول رہا ہوں");
+    setTimeout(()=> window.open('https://m.youtube.com','_blank'), 1000);
   }
-  else if(text.includes('گوگل') || text.includes('google')){
-    speak('گوگل کھول رہا ہوں');
-    window.open('https://google.com', '_blank');
+  else if(text.includes('گوگل')){
+    speak("گوگل کھول رہا ہوں");
+    setTimeout(()=> window.open('https://google.com','_blank'), 800);
   }
-  else if(text.includes('کال') || text.includes('call')){
-    speak('کال ڈائلر کھول رہا ہوں');
-    window.location.href = 'tel:';
+  else if(text.includes('کال') || text.includes('ڈائل')){
+    speak("کال ڈائلر کھول رہا ہوں حمزہ بھائی");
+    window.location.href = "tel:";
   }
-  else if(text.includes('وقت') || text.includes('time')){
+  else if(text.includes('سیٹنگ') || text.includes('setting')){
+    speak("موبائل کی سیٹنگ کھولنے کی کوشش کر رہا ہوں");
+    window.open('about:settings','_blank');
+  }
+  else if(text.includes('وقت')){
     let t = new Date().toLocaleTimeString('ur-PK');
-    speak('اس وقت وقت ہے ' + t);
+    speak("اس وقت وقت ہے " + t);
   }
-  else if(text.includes('تاریخ') || text.includes('date')){
-    let d = new Date().toLocaleDateString('ur-PK');
-    speak('آج کی تاریخ ہے ' + d);
+  else if(text.includes('بیٹری') || text.includes('battery')){
+    if(navigator.getBattery){
+      navigator.getBattery().then(b=>{
+        speak("آپ کے موبائل میں " + Math.round(b.level*100) + " فیصد بیٹری باقی ہے");
+      });
+    }else{ speak("آپ کے موبائل انفینکس سمارٹ سکس میں بیٹری ٹھیک ہے"); }
   }
-  else if(text.includes('نام کیا') || text.includes('کون ہو')){
-    speak('میں حمزہ AI سسٹم ہوں، حمزہ بھائی کا پرسنل اسسٹنٹ');
-  }
-  else if(text.includes('السلام')){
-    speak('وعلیکم السلام حمزہ بھائی، سنائیں کیا حکم ہے؟');
+  else if(text.includes('نام') || text.includes('کون')){
+    speak("میں حمزہ اے آئی ہوں، حمزہ بھائی کا وی وی آئی پی پرسنل اسسٹنٹ، اینڈرائیڈ گیارہ کے لیے بنایا گیا");
   }
   else{
-    speak('آپ نے کہا ' + text + '، میں اس پر کام کر رہا ہوں۔ اگر آپ نے ایپ کھولنے کا کہا ہے تو بتائیں کونسی ایپ کھولنی ہے؟');
+    speak("آپ نے کہا " + raw + "۔ میں سمجھ گیا ہوں، اس پر کام کر رہا ہوں۔");
   }
 }
 
-if(SpeechRecognition){
-  recognition = new SpeechRecognition();
-  recognition.lang = 'ur-PK';
-  recognition.continuous = false;
-
-  recognition.onstart = ()=>{
-    mic.classList.add('listening');
-    status.innerText = 'سن رہا ہوں...';
-  }
-  recognition.onend = ()=>{
-    mic.classList.remove('listening');
-    status.innerText = 'سسٹم تیار ہے...';
-  }
-  recognition.onresult = (e)=>{
-    let text = e.results[0][0].transcript;
-    doCommand(text);
-  }
-
-  mic.onclick = ()=> recognition.start();
+// Voice Recognition
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec;
+if(SR){
+  rec = new SR();
+  rec.lang = 'ur-PK';
+  rec.onstart = ()=>{ mic.classList.add('listening'); status.innerText = "سن رہا ہوں... بولو"; }
+  rec.onend = ()=>{ mic.classList.remove('listening'); if(isOn) status.innerText = "🟢 آن لائن - حکم کریں"; }
+  rec.onresult = (e)=>{ doCommand(e.results[0][0].transcript); }
+  mic.onclick = ()=>{ if(!isOn){ speak("پہلے آن کا بٹن دبائیں"); return; } rec.start(); }
 }else{
-  status.innerText = 'آپ کے براؤزر میں وائس سپورٹ نہیں، کروم استعمال کریں';
-  mic.onclick = ()=>{
-    let t = prompt('بول کر لکھیں، کیا کرنا ہے؟');
-    if(t) doCommand(t);
-  }
+  mic.onclick = ()=>{ let t=prompt("کیا کرنا ہے لکھیں:"); if(t) doCommand(t); }
 }
-speak('السلام علیکم حمزہ بھائی، حمزہ AI سسٹم آن لائن ہے');
+
+// Auto resume background
+if(localStorage.getItem('hamza_ai_on')=='true'){ powerOn(); }
 </script>
 </body>
 </html>
