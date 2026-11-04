@@ -1,326 +1,166 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ur" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hamza AI Assistant</title>
-
+<title>HAMZA AI</title>
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    background: #080808;
-    color: white;
-    font-family: Arial, sans-serif;
-}
-
-header {
-    padding: 22px;
-    background: #111;
-    border-bottom: 1px solid #333;
-}
-
-header h2 {
-    color: #ffffff;
-    font-size: 23px;
-}
-
-header p {
-    color: #888;
-    margin-top: 6px;
-}
-
-.container {
-    padding: 20px;
-    text-align: center;
-}
-
-.logo {
-    width: 85px;
-    height: 85px;
-    border-radius: 50%;
-    background: linear-gradient(135deg,#555,#111);
-    border: 2px solid #888;
-    margin: 45px auto 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 35px;
-    font-weight: bold;
-}
-
-h1 {
-    font-size: 26px;
-    margin-bottom: 10px;
-}
-
-.subtitle {
-    color: #888;
-    margin-bottom: 30px;
-}
-
-.chatbox {
-    background: #151515;
-    border: 1px solid #333;
-    border-radius: 15px;
-    padding: 15px;
-    min-height: 180px;
-    text-align: left;
-    margin-bottom: 20px;
-}
-
-#response {
-    color: #ddd;
-    line-height: 1.7;
-    white-space: pre-wrap;
-}
-
-input {
-    width: 100%;
-    padding: 16px;
-    background: #171717;
-    border: 1px solid #444;
-    border-radius: 12px;
-    color: white;
-    outline: none;
-    font-size: 16px;
-    margin-bottom: 12px;
-}
-
-button {
-    padding: 15px;
-    border: none;
-    border-radius: 12px;
-    background: #eeeeee;
-    color: black;
-    font-weight: bold;
-    font-size: 15px;
-    cursor: pointer;
-}
-
-.send {
-    width: 100%;
-    margin-bottom: 15px;
-}
-
-.voice {
-    width: 75px;
-    height: 75px;
-    border-radius: 50%;
-    background: #252525;
-    border: 2px solid #777;
-    color: white;
-    font-size: 28px;
-}
-
-.apps {
-    display: grid;
-    grid-template-columns: repeat(3,1fr);
-    gap: 12px;
-    margin-top: 30px;
-}
-
-.apps button {
-    background: #191919;
-    color: white;
-    border: 1px solid #444;
-    padding: 18px 5px;
-}
-
-footer {
-    color: #666;
-    text-align: center;
-    padding: 30px 10px;
-    font-size: 12px;
-}
+body{margin:0;background:#000;color:#fff;font-family:system-ui;text-align:center}
+.top{background:#000;padding:20px;text-align:right;border-bottom:1px solid #222}
+.top h1{margin:0;font-size:32px}
+.top p{margin:5px 0 0;color:#888;font-size:18px}
+.logo{width:110px;height:110px;background:#222;border-radius:50%;margin:35px auto 10px;display:flex;align-items:center;justify-content:center;font-size:60px;font-weight:bold;border:1px solid #555}
+h2{font-size:32px;margin:10px 0 5px}
+.sub{color:#888;font-size:20px;padding:0 20px}
+.box{background:#0a0a0a;border:1px solid #222;border-radius:20px;padding:20px;margin:25px 15px;text-align:right;font-size:20px;line-height:1.6;min-height:100px}
+input{width:88%;padding:16px;border-radius:15px;border:1px solid #333;background:#111;color:#fff;font-size:18px;outline:none;text-align:center}
+.send{background:#fff;color:#000;border:none;padding:16px;border-radius:15px;width:92%;font-size:20px;font-weight:bold;margin-top:12px}
+.mic{width:70px;height:70px;border-radius:50%;background:#fff;font-size:30px;border:none;margin-top:18px}
+#status{color:#00ff88;font-size:13px;margin-top:8px}
 </style>
 </head>
-
 <body>
+<div class="top"><h1>HAMZA AI</h1><p>Your Personal AI Assistant</p></div>
 
-<header>
-    <h2>HAMZA AI</h2>
-    <p>Your Personal AI Assistant</p>
-</header>
+<div class="logo">H</div>
+<h2>Hamza AI Assistant</h2>
+<div class="sub">Your Voice. Your Commands. Your Assistant.</div>
+<div id="status">سسٹم تیار ہے...</div>
 
-<div class="container">
-
-    <div class="logo">H</div>
-
-    <h1>Hamza AI Assistant</h1>
-
-    <p class="subtitle">
-        Your Voice. Your Commands. Your Assistant.
-    </p>
-
-    <div class="chatbox">
-        <p id="response">
-            Assalamualaikum Hamza Sir!
-
-            I am Hamza AI Assistant.
-
-            How can I help you today?
-        </p>
-    </div>
-
-    <input
-        type="text"
-        id="command"
-        placeholder="Type your command here..."
-    >
-
-    <button class="send" onclick="sendCommand()">
-        SEND COMMAND
-    </button>
-
-    <button class="voice" onclick="startVoice()">
-        🎤
-    </button>
-
-    <p style="color:#888;margin-top:12px">
-        Tap microphone to speak
-    </p>
-
-    <div class="apps">
-
-        <button onclick="openApp('https://www.youtube.com')">
-            ▶ YouTube
-        </button>
-
-        <button onclick="openApp('https://www.instagram.com')">
-            ◎ Instagram
-        </button>
-
-        <button onclick="openApp('https://www.whatsapp.com')">
-            ☎ WhatsApp
-        </button>
-
-    </div>
-
+<div class="box">
+<div id="userText">You: ...</div>
+<div id="aiText" style="margin-top:10px;color:#ccc">میں تیار ہوں حمزہ بھائی، حکم کریں</div>
 </div>
 
-<footer>
-    HAMZA AI ASSISTANT<br>
-    Personal AI Project
-</footer>
+<input id="txt" placeholder="Type your command here...">
+<br>
+<button class="send" onclick="fromInput()">SEND COMMAND</button>
+<br>
+<button class="mic" id="micBtn">🎙️</button>
+<p style="color:#888;font-size:13px">مائیک دبائیں اور اردو میں بولیں</p>
 
 <script>
+let userText=document.getElementById('userText');
+let aiText=document.getElementById('aiText');
+let status=document.getElementById('status');
+let femaleVoice=null;
 
-const response = document.getElementById("response");
+// --- لیڈیز آواز سیٹ کرنا ---
+function loadVoices(){
+  let voices=window.speechSynthesis.getVoices();
+  // پہلے اردو لیڈیز، پھر کوئی بھی لیڈیز، پھر اردو
+  femaleVoice = voices.find(v=>v.lang.includes('ur') && v.name.toLowerCase().includes('female')) ||
+                voices.find(v=>v.lang.includes('ur') && v.name.toLowerCase().includes('google')) ||
+                voices.find(v=>v.name.toLowerCase().includes('female') && v.lang.includes('en')) ||
+                voices.find(v=>v.lang.includes('ur')) ||
+                voices.find(v=>v.name.toLowerCase().includes('samantha') || v.name.toLowerCase().includes('zira') || v.name.toLowerCase().includes('aria'));
+}
+window.speechSynthesis.onvoiceschanged=loadVoices;
+loadVoices();
 
-function speak(text) {
-    if ('speechSynthesis' in window) {
-        speechSynthesis.cancel();
-
-        let speech = new SpeechSynthesisUtterance(text);
-
-        speech.lang = "hi-IN";
-        speech.rate = 1;
-
-        speechSynthesis.speak(speech);
-    }
+function speak(t){
+  aiText.innerText=t;
+  try{
+    window.speechSynthesis.cancel();
+    let m=new SpeechSynthesisUtterance(t);
+    m.lang='ur-PK';
+    m.rate=0.92;
+    m.pitch=1.3; // لیڈیز والی آواز کے لیے پچ اونچی
+    if(femaleVoice) m.voice=femaleVoice;
+    window.speechSynthesis.speak(m);
+  }catch(e){}
 }
 
-function sendCommand() {
-
-    let command = document.getElementById("command")
-        .value.trim().toLowerCase();
-
-    if (!command) return;
-
-    response.innerText = "You: " + command;
-
-    if (command.includes("youtube")) {
-
-        response.innerText += "\nOpening YouTube...";
-        speak("Opening YouTube");
-        openApp("https://www.youtube.com");
-
-    }
-
-    else if (command.includes("instagram")) {
-
-        response.innerText += "\nOpening Instagram...";
-        speak("Opening Instagram");
-        openApp("https://www.instagram.com");
-
-    }
-
-    else if (command.includes("whatsapp")) {
-
-        response.innerText += "\nOpening WhatsApp...";
-        speak("Opening WhatsApp");
-        openApp("https://www.whatsapp.com");
-
-    }
-
-    else if (command.includes("hello") ||
-             command.includes("salam") ||
-             command.includes("नमस्ते")) {
-
-        response.innerText += "\nAssalamualaikum Hamza Sir!";
-        speak("Assalamualaikum Hamza Sir");
-
-    }
-
-    else {
-
-        response.innerText +=
-        "\nI am ready to receive your command. AI connection will be added in the next version.";
-
-        speak("I am ready for your command");
-
-    }
-
-    document.getElementById("command").value = "";
+function fromInput(){
+  let v=document.getElementById('txt').value;
+  if(!v.trim()){speak("پہلے کچھ لکھیں تو سہی حمزہ بھائی");return;}
+  doCommand(v);
+  document.getElementById('txt').value="";
 }
 
-function openApp(url) {
-    window.open(url, "_blank");
+function doCommand(raw){
+  let text=raw.toLowerCase().trim();
+  userText.innerText="You: "+raw;
+
+  // --- 1. ایپ کھولنا ---
+  if(text.includes('whatsapp')||text.includes('واٹس')){
+    speak("جی حمزہ بھائی، واٹس ایپ کھول رہی ہوں");
+    setTimeout(()=>window.open('https://wa.me/','_blank'),800);
+  }
+  else if(text.includes('youtube')||text.includes('یوٹیوب')){
+    speak("جی، یوٹیوب کھول رہی ہوں");
+    setTimeout(()=>window.open('https://m.youtube.com','_blank'),800);
+  }
+  else if(text.includes('facebook')||text.includes('فیس')){
+    speak("فیس بک کھول رہی ہوں");
+    setTimeout(()=>window.open('https://m.facebook.com','_blank'),800);
+  }
+  else if(text.includes('tiktok')||text.includes('ٹک')){
+    speak("ٹک ٹاک کھول رہی ہوں");
+    setTimeout(()=>window.open('https://www.tiktok.com','_blank'),800);
+  }
+  else if(text.includes('google')||text.includes('گوگل')){
+    speak("گوگل کھول رہی ہوں");
+    setTimeout(()=>window.open('https://google.com','_blank'),800);
+  }
+  else if(text.includes('call')||text.includes('کال')){
+    speak("کال ڈائلر کھول رہی ہوں");
+    setTimeout(()=>window.location.href="tel:",800);
+  }
+
+  // --- 2. ریسرچ کرنا ---
+  else if(text.includes('research')||text.includes('ریسرچ')||text.includes('search')||text.includes('تلاش')||text.includes('کے بارے میں')||text.includes('ka matlab')||text.includes('کیا ہے')){
+    // "پاکستان کے بارے میں" سے "پاکستان" نکالنا
+    let q=raw.replace(/research|ریسرچ|search|تلاش|کے بارے میں|کے بارے|بتاؤ|batao|kya hai|کیا ہے/gi,"").trim();
+    if(!q) q=raw;
+    speak("حمزہ بھائی، "+q+" کے بارے میں ریسرچ کر رہی ہوں، یہ دیکھیں");
+    setTimeout(()=>window.open('https://www.google.com/search?q='+encodeURIComponent(q),'_blank'),1000);
+  }
+
+  // --- 3. وقت، تاریخ، بیٹری ---
+  else if(text.includes('waqt')||text.includes('وقت')||text.includes('time')||text.includes('baj')){
+    speak("حمزہ بھائی، اس وقت وقت ہے "+new Date().toLocaleTimeString('ur-PK'));
+  }
+  else if(text.includes('tareekh')||text.includes('تاریخ')||text.includes('date')){
+    speak("آج کی تاریخ ہے "+new Date().toLocaleDateString('ur-PK'));
+  }
+  else if(text.includes('battery')||text.includes('بیٹری')){
+    if(navigator.getBattery){navigator.getBattery().then(b=>speak("آپ کے موبائل میں "+Math.round(b.level*100)+" فیصد بیٹری ہے"))}else{speak("بیٹری ٹھیک ہے حمزہ بھائی")}
+  }
+
+  // --- 4. بات چیت اردو میں ---
+  else if(text.includes('salam')||text.includes('سلام')||text.includes('hi')||text.includes('hello')||text.includes('hy')){
+    speak("وعلیکم السلام حمزہ بھائی، میں آپ کی حمزہ اے آئی ہوں، سنائیں کیا حکم ہے؟ ریسرچ کرنی ہے یا کوئی ایپ کھولنی ہے؟");
+  }
+  else if(text.includes('naam')||text.includes('نام')||text.includes('kon ho')||text.includes('کون')){
+    speak("میں حمزہ اے آئی ہوں، آپ کی پرسنل اسسٹنٹ، میں اردو میں آپ کے سارے کام کر سکتی ہوں");
+  }
+  else if(text.includes('kesi ho')||text.includes('کیسی')||text.includes('kaisi')){
+    speak("میں بالکل ٹھیک ہوں حمزہ بھائی، آپ سنائیں، آپ کیسے ہیں؟");
+  }
+  else if(text.includes('shukriya')||text.includes('شکریہ')||text.includes('thank')){
+    speak("کوئی بات نہیں حمزہ بھائی، یہ تو میرا کام ہے");
+  }
+  else{
+    // اگر کوئی بھی کمانڈ نہ ملے تو اس کو ریسرچ سمجھ کر گوگل پر کھولو
+    speak("آپ نے کہا "+raw+"، میں اس کے بارے میں ریسرچ کر رہی ہوں");
+    setTimeout(()=>window.open('https://www.google.com/search?q='+encodeURIComponent(raw),'_blank'),1000);
+  }
 }
 
-function startVoice() {
-
-    const SpeechRecognition =
-        window.SpeechRecognition ||
-        window.webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-
-        response.innerText =
-        "Voice recognition is not supported in this browser.";
-
-        return;
-    }
-
-    const recognition = new SpeechRecognition();
-
-    recognition.lang = "hi-IN";
-    recognition.interimResults = false;
-
-    recognition.onresult = function(event) {
-
-        let command =
-        event.results[0][0].transcript;
-
-        document.getElementById("command").value = command;
-
-        sendCommand();
-    };
-
-    recognition.onerror = function() {
-        response.innerText =
-        "Voice recognition failed. Please try again.";
-    };
-
-    recognition.start();
+// --- وائس سننا - اردو ---
+let SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(SR){
+  let rec=new SR(); rec.lang='ur-PK';
+  rec.onresult=(e)=>doCommand(e.results[0][0].transcript);
+  rec.onerror=(e)=>{status.innerText="مائیک کی اجازت دیں، یا لکھ کر کمانڈ دیں"};
+  document.getElementById('micBtn').onclick=()=>{try{rec.start();status.innerText="سن رہی ہوں... بولیے";}catch(e){}};
+}else{
+  document.getElementById('micBtn').onclick=()=>speak("اس براؤزر میں وائس نہیں ہے، لکھ کر کمانڈ دیں");
 }
 
+// پہلی بار آن ہوتے ہی لیڈیز آواز میں بولے
+setTimeout(()=>{ loadVoices(); speak("السلام علیکم حمزہ بھائی، میں حمزہ اے آئی ہوں، آپ کی پرسنل اسسٹنٹ، میں اردو میں آپ کے سارے کام کر سکتی ہوں، حکم کریں"); },800);
 </script>
-
 </body>
 </html>
