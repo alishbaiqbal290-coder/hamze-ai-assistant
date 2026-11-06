@@ -1,183 +1,463 @@
+
 <!DOCTYPE html>
-<html lang="ur" dir="rtl">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HAMZA AI</title>
+<title>Hamza AI Assistant</title>
+
 <style>
-body{margin:0;background:#000;color:#fff;font-family:system-ui;text-align:center}
-.top{background:#000;padding:20px;text-align:right;border-bottom:1px solid #222}
-.top h1{margin:0;font-size:32px}
-.top p{margin:5px 0 0;color:#888;font-size:18px}
-.logo{width:110px;height:110px;background:#222;border-radius:50%;margin:35px auto 10px;display:flex;align-items:center;justify-content:center;font-size:60px;font-weight:bold;border:1px solid #555}
-h2{font-size:32px;margin:10px 0 5px}
-.sub{color:#888;font-size:20px;padding:0 20px}
-.box{background:#0a0a0a;border:1px solid #222;border-radius:20px;padding:20px;margin:25px 15px;text-align:right;font-size:20px;line-height:1.6;min-height:100px}
-input{width:88%;padding:16px;border-radius:15px;border:1px solid #333;background:#111;color:#fff;font-size:18px;outline:none;text-align:center}
-.send{background:#fff;color:#000;border:none;padding:16px;border-radius:15px;width:92%;font-size:20px;font-weight:bold;margin-top:12px}
-.mic{width:70px;height:70px;border-radius:50%;background:#fff;font-size:30px;border:none;margin-top:18px}
-.mic.listening{background:#00ff88;transform:scale(1.1)}
-#status{color:#00ff88;font-size:13px;margin-top:8px}
-.unlock{background:#00aaff;color:#fff;border:none;padding:10px 18px;border-radius:20px;margin-top:10px;font-weight:bold}
+* { box-sizing:border-box; }
+
+body {
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#080d0b;
+  color:white;
+}
+
+header {
+  padding:20px;
+  text-align:center;
+  background:#101a15;
+  border-bottom:1px solid #174d32;
+}
+
+.logo {
+  color:#32e987;
+  font-size:25px;
+  font-weight:bold;
+}
+
+header p {
+  color:#9aa9a0;
+  font-size:12px;
+}
+
+#status {
+  color:#32e987;
+  font-size:13px;
+  margin-top:8px;
+}
+
+#chat {
+  height:calc(100dvh - 220px);
+  overflow-y:auto;
+  padding:15px;
+}
+
+.message {
+  padding:13px;
+  margin:12px 0;
+  border-radius:14px;
+  max-width:88%;
+  line-height:1.5;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
+
+.user {
+  background:#155b39;
+  margin-left:auto;
+}
+
+.ai {
+  background:#18231d;
+  border:1px solid #284635;
+  margin-right:auto;
+}
+
+.controls {
+  background:#101a15;
+  padding:12px;
+  position:sticky;
+  bottom:0;
+  border-top:1px solid #244331;
+}
+
+.inputrow {
+  display:flex;
+  gap:8px;
+}
+
+input {
+  flex:1;
+  min-width:0;
+  padding:14px;
+  border-radius:12px;
+  border:1px solid #31523e;
+  background:#080d0b;
+  color:white;
+  font-size:15px;
+}
+
+button {
+  border:none;
+  border-radius:12px;
+  padding:12px 15px;
+  background:#20c875;
+  color:#06150d;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.actions {
+  display:flex;
+  gap:9px;
+  margin-top:12px;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+
+.actions button {
+  background:#1b3024;
+  color:white;
+  border:1px solid #315a40;
+}
+
+.actions button.active {
+  background:#20c875;
+  color:#06150d;
+}
+
+button:disabled {
+  opacity:.5;
+}
+
+.welcome {
+  text-align:center;
+  margin-top:45px;
+  color:#a8b9ad;
+}
+
 </style>
 </head>
+
 <body>
-<div class="top"><h1>HAMZA AI</h1><p>Your Personal AI Assistant</p></div>
 
-<div class="logo">H</div>
-<h2>Hamza AI Assistant</h2>
-<div class="sub">Your Voice. Your Commands. Your Assistant.</div>
-<div id="status">سسٹم تیار ہے...</div>
-<button class="unlock" onclick="unlockAudio()">🔊 آواز آن کرنے کے لیے یہاں دبائیں</button>
+<header>
+  <div class="logo">✦ HAMZA AI</div>
+  <p>YOUR PERSONAL AI ASSISTANT</p>
+  <div id="status">● Ready to chat</div>
+</header>
 
-<div class="box">
-<div id="userText">You: ...</div>
-<div id="aiText" style="margin-top:10px;color:#ccc">میں تیار ہوں حمزہ بھائی، حکم کریں</div>
+<main id="chat">
+  <div class="welcome">
+    <h2>Assalam-o-Alaikum!</h2>
+    <h3>I'm Hamza AI Assistant</h3>
+    <p>Ask me anything. Let's talk!</p>
+  </div>
+</main>
+
+<div class="controls">
+
+  <div class="inputrow">
+    <input
+      id="userInput"
+      placeholder="Type your message here..."
+      autocomplete="off"
+    >
+    <button id="sendBtn" onclick="sendMessage()">SEND</button>
+  </div>
+
+  <div class="actions">
+    <button id="callBtn" onclick="toggleCall()">
+      📞 CALL ON
+    </button>
+
+    <button onclick="stopVoice()">
+      📵 CALL OFF
+    </button>
+
+    <button onclick="toggleSpeech()">
+      🔊 Voice ON/OFF
+    </button>
+
+    <button onclick="clearChat()">
+      🗑 Clear Chat
+    </button>
+  </div>
+
 </div>
 
-<input id="txt" placeholder="Type your command here...">
-<br>
-<button class="send" onclick="fromInput()">SEND COMMAND</button>
-<br>
-<button class="mic" id="micBtn">🎙️</button>
-<p style="color:#888;font-size:13px">مائیک دبائیں اور اردو میں بولیں</p>
-
 <script>
-let userText=document.getElementById('userText');
-let aiText=document.getElementById('aiText');
-let status=document.getElementById('status');
-let femaleVoice=null;
-let audioUnlocked=false;
 
-function loadVoices(){
-  let vs=window.speechSynthesis.getVoices();
-  femaleVoice = vs.find(v=>v.lang.includes('ur') && v.name.toLowerCase().includes('female')) ||
-                vs.find(v=>v.lang.includes('ur')) ||
-                vs.find(v=>v.name.toLowerCase().includes('samantha')||v.name.toLowerCase().includes('zira')||v.name.toLowerCase().includes('aria')) ||
-                vs.find(v=>v.name.toLowerCase().includes('female'));
-}
-window.speechSynthesis.onvoiceschanged=loadVoices; loadVoices();
+// AI SETTINGS
+const API_URL = "/api/chat";
 
-// --- 1. AWAZ UNLOCK - YE SAB SE ZAROORI HAI ---
-function unlockAudio(){
-  audioUnlocked=true;
-  loadVoices();
-  // Choti si khamosh awaz se browser ko unlock karo
-  let m=new SpeechSynthesisUtterance("Assalam o Alaikum Hamza bhai, awaz on ho gai hai");
-  m.lang='ur-PK'; m.pitch=1.3; m.rate=0.92; if(femaleVoice) m.voice=femaleVoice;
-  window.speechSynthesis.cancel(); window.speechSynthesis.speak(m);
-  status.innerText="✅ آواز آن ہو گئی - اب بولو";
-  aiText.innerText="آواز آن ہو گئی ہے حمزہ بھائی، اب حکم کریں";
-}
+// CHAT SETTINGS
+const chat = document.getElementById("chat");
+const input = document.getElementById("userInput");
+const statusText = document.getElementById("status");
 
-function speak(t){
-  aiText.innerText=t;
-  if(!audioUnlocked){
-    // Agar unlock nahi hua to bhi koshish karo
-    audioUnlocked=true;
-  }
-  try{
-    window.speechSynthesis.cancel();
-    let m=new SpeechSynthesisUtterance(t);
-    m.lang='ur-PK'; m.rate=0.92; m.pitch=1.3;
-    if(femaleVoice) m.voice=femaleVoice;
-    window.speechSynthesis.speak(m);
-  }catch(e){ console.log(e); }
-}
+let callActive = false;
+let speechEnabled = true;
+let recognition = null;
+let speaking = false;
 
-function fromInput(){
-  let v=document.getElementById('txt').value;
-  if(!v.trim()){ speak("پہلے کچھ لکھیں تو سہی حمزہ بھائی"); return; }
-  let cmd=v; // Pehle save karo, phir clear karo - Yahi bug tha
-  document.getElementById('txt').value="";
-  doCommand(cmd);
-}
+const saved = JSON.parse(
+  localStorage.getItem("hamza_chat") || "[]"
+);
 
-// --- 2. APPS CONTROL - INTENT WALA TAREEQA ---
-function openApp(intentUrl, webUrl){
-  // Pehle Android App kholne ki koshish, na khule to website
-  try{ window.location.href=intentUrl; }catch(e){}
-  setTimeout(()=>{ window.open(webUrl,'_blank'); },1200);
-}
+saved.forEach(item => {
+  addMessage(item.text,item.type,false);
+});
 
-function doCommand(raw){
-  let text=raw.toLowerCase().trim();
-  userText.innerText="You: "+raw;
-  status.innerText="Command mila: "+raw;
+function addMessage(text,type,save=true) {
 
-  if(text.includes('whatsapp')||text.includes('واٹس')){
-    speak("جی حمزہ بھائی، واٹس ایپ کھول رہی ہوں");
-    openApp('intent://send#Intent;scheme=whatsapp;package=com.whatsapp;end','https://wa.me/');
-  }
-  else if(text.includes('youtube')||text.includes('یوٹیوب')){
-    speak("جی، یوٹیوب کھول رہی ہوں");
-    openApp('intent://www.youtube.com#Intent;scheme=https;package=com.google.android.youtube;end','https://m.youtube.com');
-  }
-  else if(text.includes('facebook')||text.includes('فیس')){
-    speak("فیس بک کھول رہی ہوں");
-    openApp('intent://facebook.com#Intent;scheme=https;package=com.facebook.katana;end','https://m.facebook.com');
-  }
-  else if(text.includes('tiktok')||text.includes('ٹک')){
-    speak("ٹک ٹاک کھول رہی ہوں");
-    openApp('intent://#Intent;scheme=snssdk1128;package=com.zhiliaoapp.musically;end','https://www.tiktok.com');
-  }
-  else if(text.includes('camera')||text.includes('کیمرہ')){
-    speak("کیمرہ کھول رہی ہوں");
-    openApp('intent://#Intent;action=android.media.action.IMAGE_CAPTURE;end','https://google.com');
-  }
-  else if(text.includes('gallery')||text.includes('گیلری')||text.includes('photo')){
-    speak("گیلری کھول رہی ہوں");
-    openApp('intent://#Intent;action=android.intent.action.VIEW;type=image/*;end','https://google.com');
-  }
-  else if(text.includes('setting')||text.includes('سیٹنگ')){
-    speak("سیٹنگ کھول رہی ہوں");
-    openApp('intent://#Intent;action=android.settings.SETTINGS;end','https://google.com');
-  }
-  else if(text.includes('call')||text.includes('کال')||text.includes('sister')||text.includes('bhai')||text.includes('amma')||text.includes('abu')){
-    // Sister ko call lgo - Number nikalna
-    let name=raw.replace(/call|karo|ko|lgo|lagao/gi,"").trim();
-    speak("جی حمزہ بھائی، "+name+" کو کال لگا رہی ہوں، ڈائلر کھول رہی ہوں");
-    setTimeout(()=>{ window.location.href="tel:"; },800);
-  }
-  else if(text.includes('google')||text.includes('گوگل')){
-    speak("گوگل کھول رہی ہوں");
-    window.open('https://google.com','_blank');
-  }
-  else if(text.includes('waqt')||text.includes('وقت')||text.includes('time')||text.includes('baj')){
-    speak("حمزہ بھائی، اس وقت وقت ہے "+new Date().toLocaleTimeString('ur-PK'));
-  }
-  else if(text.includes('research')||text.includes('ریسرچ')||text.includes('کے بارے')||text.includes('کیا ہے')||text.includes('matlab')){
-    let q=raw.replace(/research|ریسرچ|کے بارے میں|بتاؤ|batao|کیا ہے/gi,"").trim();
-    speak("حمزہ بھائی، "+q+" کے بارے میں ریسرچ کر رہی ہوں");
-    setTimeout(()=>window.open('https://www.google.com/search?q='+encodeURIComponent(q),'_blank'),800);
-  }
-  else if(text.includes('salam')||text.includes('سلام')||text.includes('hi')||text.includes('hello')||text.includes('hy')){
-    speak("وعلیکم السلام حمزہ بھائی، میں آپ کی حمزہ اے آئی ہوں، سنائیں کیا حکم ہے؟");
-  }
-  else if(text.includes('kesi ho')||text.includes('کیسی')){
-    speak("میں بالکل ٹھیک ہوں حمزہ بھائی، آپ سنائیں");
-  }
-  else{
-    speak("آپ نے کہا "+raw+"، میں اس کے بارے میں ریسرچ کر رہی ہوں");
-    setTimeout(()=>window.open('https://www.google.com/search?q='+encodeURIComponent(raw),'_blank'),800);
+  const welcome = document.querySelector(".welcome");
+  if(welcome) welcome.remove();
+
+  const div = document.createElement("div");
+  div.className = "message " + type;
+  div.textContent = text;
+
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+
+  if(save) {
+    saved.push({text,type});
+    localStorage.setItem(
+      "hamza_chat",
+      JSON.stringify(saved)
+    );
   }
 }
 
-// --- 3. MIC FIX ---
-let SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-if(SR){
-  let rec=new SR(); rec.lang='ur-PK'; rec.continuous=false;
-  rec.onstart=()=>{ document.getElementById('micBtn').classList.add('listening'); status.innerText="سن رہی ہوں... بولیے"; };
-  rec.onend=()=>{ document.getElementById('micBtn').classList.remove('listening'); };
-  rec.onerror=(e)=>{ status.innerText="Mic Error: "+e.error+" - Chrome me kholo aur Allow dabao"; speak("مائیک کی اجازت نہیں ملی، کروم میں کھول کر Allow دبائیں"); };
-  rec.onresult=(e)=>{ doCommand(e.results[0][0].transcript); };
-  document.getElementById('micBtn').onclick=()=>{
-    if(!audioUnlocked) unlockAudio();
-    try{ rec.start(); }catch(e){ rec.stop(); setTimeout(()=>rec.start(),300); }
+async function sendMessage(text=null) {
+
+  const message = (text || input.value).trim();
+
+  if(!message) return;
+
+  input.value = "";
+
+  addMessage(message,"user");
+
+  statusText.textContent = "● Thinking...";
+
+  document.getElementById("sendBtn").disabled = true;
+
+  try {
+
+    const response = await fetch(API_URL,{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        message:message,
+        history:saved.slice(-20).map(m=>({
+          role:m.type === "user" ? "user" : "assistant",
+          content:m.text
+        }))
+      })
+    });
+
+    if(!response.ok) {
+      throw new Error("AI server error: " + response.status);
+    }
+
+    const data = await response.json();
+
+    const answer = data.reply || data.answer;
+
+    if(!answer) {
+      throw new Error("AI response was empty");
+    }
+
+    addMessage(answer,"ai");
+
+    statusText.textContent = "● Ready to chat";
+
+    if(speechEnabled) {
+      speak(answer);
+    }
+
+  } catch(error) {
+
+    addMessage(
+      "AI connection is not ready. Please check the AI server and internet connection.",
+      "ai"
+    );
+
+    statusText.textContent = "● Connection error";
+
+    console.error(error);
+
+  } finally {
+
+    document.getElementById("sendBtn").disabled = false;
+
+  }
+}
+
+// ENTER TO SEND
+input.addEventListener("keydown",e=>{
+  if(e.key === "Enter") sendMessage();
+});
+
+// TEXT TO SPEECH
+function speak(text) {
+
+  if(!speechEnabled || !("speechSynthesis" in window)) return;
+
+  speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(text);
+
+  utterance.lang = "ur-PK";
+  utterance.rate = 1;
+
+  speaking = true;
+
+  utterance.onend = () => {
+    speaking = false;
+    if(callActive) startListening();
   };
-}else{
-  document.getElementById('micBtn').onclick=()=>speak("اس ایپ میں مائیک نہیں چلے گا، کروم میں کھولیں");
+
+  utterance.onerror = () => {
+    speaking = false;
+    if(callActive) startListening();
+  };
+
+  speechSynthesis.speak(utterance);
 }
+
+// VOICE RECOGNITION
+const SpeechRecognition =
+  window.SpeechRecognition ||
+  window.webkitSpeechRecognition;
+
+if(SpeechRecognition) {
+
+  recognition = new SpeechRecognition();
+
+  recognition.lang = "ur-PK";
+  recognition.continuous = false;
+  recognition.interimResults = false;
+
+  recognition.onresult = event => {
+
+    const transcript =
+      event.results[0][0].transcript;
+
+    statusText.textContent = "● You said: " + transcript;
+
+    sendMessage(transcript);
+  };
+
+  recognition.onerror = event => {
+
+    statusText.textContent =
+      "● Microphone: " + event.error;
+
+    if(callActive && event.error !== "not-allowed") {
+      setTimeout(startListening,1000);
+    }
+  };
+
+  recognition.onend = () => {
+
+    if(callActive && !speaking) {
+      setTimeout(startListening,700);
+    }
+
+  };
+
+}
+
+// START LISTENING
+function startListening() {
+
+  if(!recognition || !callActive || speaking) return;
+
+  try {
+    recognition.start();
+    statusText.textContent = "● Listening...";
+  } catch(error) {
+    console.log(error);
+  }
+
+}
+
+// CALL ON/OFF
+function toggleCall() {
+
+  if(!recognition) {
+    statusText.textContent =
+      "● Voice recognition is not supported in this browser";
+    return;
+  }
+
+  callActive = !callActive;
+
+  document.getElementById("callBtn")
+    .classList.toggle("active",callActive);
+
+  if(callActive) {
+
+    statusText.textContent = "● Voice call active";
+    startListening();
+
+  } else {
+
+    stopVoice();
+
+  }
+
+}
+
+function stopVoice() {
+
+  callActive = false;
+
+  if(recognition) recognition.stop();
+
+  if("speechSynthesis" in window) {
+    speechSynthesis.cancel();
+  }
+
+  speaking = false;
+
+  document.getElementById("callBtn")
+    .classList.remove("active");
+
+  statusText.textContent = "● Call disconnected";
+
+}
+
+function toggleSpeech() {
+
+  speechEnabled = !speechEnabled;
+
+  if(!speechEnabled && "speechSynthesis" in window) {
+    speechSynthesis.cancel();
+  }
+
+  statusText.textContent =
+    speechEnabled ? "● Voice enabled" : "● Voice disabled";
+
+}
+
+function clearChat() {
+
+  if(!confirm("Delete all chat history?")) return;
+
+  saved.length = 0;
+
+  localStorage.removeItem("hamza_chat");
+
+  chat.innerHTML = `
+    <div class="welcome">
+      <h2>Welcome to Hamza AI!</h2>
+      <p>Start a new conversation.</p>
+    </div>
+  `;
+
+}
+
 </script>
+
 </body>
 </html>
