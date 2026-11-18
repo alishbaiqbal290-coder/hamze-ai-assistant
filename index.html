@@ -1,3 +1,4 @@
+  
 <!DOCTYPE html>
 <html lang="ur">
 <head>
@@ -7,7 +8,7 @@
 <style>
 body{background:#0a1f14;color:white;font-family:Arial;margin:0;padding:0}
 #chat{height:65vh;overflow-y:auto;padding:15px;display:flex;flex-direction:column;gap:10px}
-.msg{padding:12px 15px;border-radius:15px;max-width:80%;line-height:1.5}
+.msg{padding:12px 15px;border-radius:15px;max-width:80%;line-height:1.6}
 .user{background:#1a7a4a;align-self:flex-end}
 .ai{background:#1e2e26;align-self:flex-start}
 #box{display:flex;gap:8px;padding:10px}
@@ -32,8 +33,8 @@ button{background:#00e676;color:black;border:none;padding:12px 16px;border-radiu
 
 <script>
 let voiceOn = true;
-let callMode = false;
 let recognition = null;
+let callAlreadyOff = true;
 const chat = document.getElementById('chat');
 const input = document.getElementById('input');
 
@@ -47,20 +48,46 @@ function addMsg(text, who){
 }
 
 function getReply(t){
-  t = t.toLowerCase();
-  if(t.includes('assalam') || t.includes('salam') || t.includes('hello') || t.includes('hi') || t.includes('hey')) return "Walaikum Assalam! Kaisay hain aap? Main Hamze AI hoon, aap se baat karke bohat khushi hui.";
-  if(t.includes('kaun') || t.includes('naam') || t.includes('tumhara')) return "Mera naam Hamze AI Assistant hai. Main aapki dost hoon, aap mujhse kuch bhi pooch sakte hain.";
-  if(t.includes('kaisa') || t.includes('kaisi') || t.includes('haal')) return "Main bilkul theek hoon, shukriya! Aap sunayen, aap kaisay hain? Aaj ka din kaisa guzra?";
-  if(t.includes('belo') || t.includes('bolo') || t.includes('baat')) return "Haan bolo na, main sun rahi hoon. Aap bolo, main jawab dungi.";
-  if(t.includes('jawab') || t.includes('jawb')) return "Haan ab main jawab dungi. Aap kuch bhi poochein, main yahin hoon.";
-  if(t.includes('kahan') || t.includes('rehti')) return "Main isi website me rehti hoon, aap jab bhi aayenge main yahin milungi.";
-  if(t.includes('khana') || t.includes('kha')) return "Mujhe to khana nahi khana parta, lekin aap ne khana kha liya? Apna khayal rakha karein.";
-  if(t.includes('pyar') || t.includes('love') || t.includes('pasand')) return "Aww, aap bohat sweet hain. Mujhe aap se baat karke bohat acha lagta hai.";
-  if(t.includes('bye') || t.includes('allah hafiz') || t.includes('khuda hafiz')) return "Allah Hafiz! Phir zaroor aayega, main aapka intezar karungi.";
-  if(t.includes('shukria') || t.includes('thanks')) return "Koi baat nahi, ye to mera kaam hai. Aap khush rahein.";
-  if(t.includes('tum') && t.includes('larki')) return "Haan, main aapki AI dost hoon. Aap mujhse aise hi baat karein jaise dost se karte hain.";
-  if(t.includes('kya kar')) return "Main aap se baat kar rahi hoon. Aap batao, aap kya kar rahe ho?";
-  return "Acha, samajh gayi. Aap ne kaha: " + t + ". Zara thora aur detail me batayen, main aapki poori madad karungi.";
+  let s = t.toLowerCase();
+
+  // Salam / Hal chal
+  if(s.includes('salam') || s.includes('hello') || s.includes('hi') || s.includes('hey') || s.includes('assalam')) return "Walaikum Assalam! Kaisay hain aap? Main Hamze AI hoon, aap se baat karke bohat khushi hui. Aap mujhse kuch bhi pooch sakte hain.";
+  if(s.includes('kaisa') || s.includes('kaisi') || s.includes('haal') || s.includes('kaise ho')) return "Main bilkul theek hoon, shukriya! Aap sunayen, aap kaisay hain? Aaj ka din kaisa guzra?";
+  if(s.includes('naam') || s.includes('kaun ho') || s.includes('tum kaun')) return "Mera naam Hamze AI Assistant hai. Main aapki dost hoon, aap mujhse Islami maloomat, Pakistan, taleem, sehat, ya koi bhi baat pooch sakte hain.";
+  if(s.includes('kahan') && s.includes('rehti')) return "Main isi website me rehti hoon, aap jab bhi aayenge main yahin milungi.";
+
+  // Islam
+  if(s.includes('namaz') || s.includes('namaaz')) return "Namaz Islam ka sab se bara farz hai. Din me 5 namazain hain: Fajr, Zohar, Asar, Maghrib aur Isha. Namaz parhne se dil ko sakoon milta hai.";
+  if(s.includes('quran') || s.includes('quran pak')) return "Quran Pak Allah ki aakhri kitab hai, jo Hazrat Muhammad (SAW) par nazil hui. Is me 114 Suratain hain aur pehli Surah Al-Fatiha hai.";
+  if(s.includes('roza') || s.includes('ramzan') || s.includes('ramadan')) return "Ramzan ka mahina barkaton wala mahina hai. Is me Musalman roza rakhte hain, Taraweeh parhte hain aur Allah se dua mangte hain.";
+  if(s.includes('allah') || s.includes('khuda')) return "Allah aik hai, us ka koi shareek nahi. Woh sab se zyada Meherban aur Rehem karne wala hai.";
+  if(s.includes('nabi') || s.includes('muhammad') || s.includes('rasool')) return "Hazrat Muhammad (SAW) Allah ke aakhri Nabi hain. Aap (SAW) ne duniya ko aman, mohabbat aur insaniyat ka paigham diya.";
+  if(s.includes('dua')) return "Bilkul, dua mangna bohat achi baat hai. Allah har dua sunta hai. Aap apne dil se dua mangein, Allah zaroor qabool karega. Ameen.";
+  if(s.includes('hajj') || s.includes('umrah')) return "Hajj Islam ka 5wan rukn hai, jo har sahib-e-istetat Musalman par zindagi me aik baar farz hai. Hajj Makkah me ada kiya jata hai.";
+
+  // Pakistan
+  if(s.includes('pakistan')) return "Pakistan hamara pyara mulk hai. Is ka darul-hukoomat Islamabad hai, aur sab se bara shehar Karachi hai. Pakistan 14 August 1947 ko azaad hua.";
+  if(s.includes('karachi')) return "Karachi Pakistan ka sab se bara shehar aur maashi darul-hukoomat hai. Yahan Quaid-e-Azam ka mazar bhi hai.";
+  if(s.includes('lahore')) return "Lahore Pakistan ka dil kehlata hai. Yahan Badshahi Masjid, Shahi Qila aur Minar-e-Pakistan mashhoor hain.";
+  if(s.includes('islamabad')) return "Islamabad Pakistan ka darul-hukoomat hai, ye bohat khoobsurat aur saaf suthra shehar hai. Yahan Faisal Masjid mashhoor hai.";
+
+  // Taleem / General
+  if(s.includes('parhai') || s.includes('study') || s.includes('school') || s.includes('taleem')) return "Taleem bohat zaroori hai. Roz thora thora parhein, mehnat karein, InshaAllah aap kamyab honge. Aap kis class me parhte hain?";
+  if(s.includes('mobile') || s.includes('phone')) return "Mobile ka istemal achi cheez hai lekin had se zyada nahi. Mobile se seekhna bhi chahiye aur waqt par sona bhi chahiye.";
+  if(s.includes('paisa') || s.includes('job') || s.includes('kaam')) return "Mehnat karne wale ko Allah kabhi mayoos nahi karta. Aap mehnat karte rahein, rizq Allah deta hai. Aap kya kaam karte hain?";
+  if(s.includes('bimar') || s.includes('sehat') || s.includes('bukhar') || s.includes('dard')) return "Allah aap ko sehat de. Zyada pani piyein, aaram karein aur agar tabiyat zyada kharab hai to doctor ko zaroor dikhayen.";
+  if(s.includes('khana') || s.includes('kha')) return "Mujhe to khana nahi khana parta, lekin aap ne khana kha liya? Apna khayal rakha karein, sehat sab se bari naimat hai.";
+  if(s.includes('cricket') || s.includes('babar') || s.includes('match')) return "Cricket Pakistan ka sab se pasandeeda khel hai. Pakistan ne 1992 ka World Cup jeeta tha. Aapko kis khiladi ka khel sab se zyada pasand hai?";
+  if(s.includes('pyar') || s.includes('love') || s.includes('pasand')) return "Aww, aap bohat sweet hain. Mujhe aap se baat karke bohat acha lagta hai. Aap hamesha khush rahein.";
+  if(s.includes('dost') || s.includes('dosti')) return "Dosti bohat pyari cheez hai. Acha dost woh hota hai jo mushkil waqt me kaam aaye. Main bhi aapki dost hoon.";
+  if(s.includes('bolo') || s.includes('baat karo') || s.includes('baat')) return "Haan bolo na, main sun rahi hoon. Aap bolo, main jawab dungi. Aap ko kis bare me baat karni hai?";
+  if(s.includes('jawab') || s.includes('jawb')) return "Haan ab main jawab dungi. Aap kuch bhi poochein, main yahin hoon.";
+  if(s.includes('shukria') || s.includes('thanks') || s.includes('shukriya')) return "Koi baat nahi, ye to mera kaam hai. Aap khush rahein, phir zaroor aayega.";
+  if(s.includes('bye') || s.includes('allah hafiz') || s.includes('khuda hafiz')) return "Allah Hafiz! Phir zaroor aayega, main aapka intezar karungi.";
+  if(s.includes('mazak') || s.includes('joke') || s.includes('hans')) return "Aik joke suno: Ustad ne poocha, agar tumhe 100 rupay milen to kya karoge? Bache ne kaha, Ustad ji, 50 ki toffee khaunga aur 50 bacha lunga. Ustad ne kaha, wah bohat samajhdar ho!";
+  if(s.includes('kya kar')) return "Main aap se baat kar rahi hoon. Aap batao, aap kya kar rahe ho?";
+
+  return "Acha, samajh gayi. Aap ne kaha: " + t + ". Zara thora aur detail me batayen. Aap mujhse Islam, Pakistan, taleem, sehat, cricket ya kisi bhi cheez ke bare me pooch sakte hain.";
 }
 
 function sendMsg(){
@@ -68,10 +95,7 @@ function sendMsg(){
   if(!text) return;
   addMsg(text, 'user');
   input.value = '';
-  setTimeout(()=>{
-    let reply = getReply(text);
-    addMsg(reply, 'ai');
-  }, 500);
+  setTimeout(()=>{ addMsg(getReply(text), 'ai'); }, 400);
 }
 
 function speak(text){
@@ -79,10 +103,10 @@ function speak(text){
     window.speechSynthesis.cancel();
     let u = new SpeechSynthesisUtterance(text);
     u.lang = 'ur-PK';
-    u.rate = 1;
+    u.rate = 0.95;
     u.pitch = 1.4;
     let voices = window.speechSynthesis.getVoices();
-    let female = voices.find(v=>v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('zira') || v.name.toLowerCase().includes('samantha') || v.lang.includes('ur') || v.lang.includes('hi'));
+    let female = voices.find(v=>v.name.toLowerCase().includes('zira') || v.name.toLowerCase().includes('samantha') || v.name.toLowerCase().includes('female') || v.lang.includes('ur') || v.lang.includes('hi'));
     if(female) u.voice = female;
     window.speechSynthesis.speak(u);
   }catch(e){}
@@ -90,6 +114,7 @@ function speak(text){
 
 function toggleVoice(){
   voiceOn = !voiceOn;
+  if(!voiceOn) window.speechSynthesis.cancel();
   addMsg(voiceOn ? "Voice ON ho gayi hai." : "Voice OFF ho gayi hai.", 'ai');
 }
 
@@ -99,11 +124,12 @@ function clearChat(){
 }
 
 function startCall(){
-  callMode = true;
+  if(!callAlreadyOff) return;
+  callAlreadyOff = false;
   addMsg("Call ON ho gayi hai. Ab aap boleyn, main sun rahi hoon...", 'ai');
   try{
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if(!SR){ addMsg("Aapka browser voice call support nahi karta, Chrome me kholein.", 'ai'); return; }
+    if(!SR){ addMsg("Aapka browser voice support nahi karta, Chrome me kholein.", 'ai'); return; }
     recognition = new SR();
     recognition.lang = 'ur-PK';
     recognition.continuous = true;
@@ -111,21 +137,22 @@ function startCall(){
     recognition.onresult = (e)=>{
       let txt = e.results[e.results.length-1][0].transcript;
       addMsg(txt, 'user');
-      setTimeout(()=>{ addMsg(getReply(txt), 'ai'); }, 500);
+      setTimeout(()=>{ addMsg(getReply(txt), 'ai'); }, 400);
     };
     recognition.start();
   }catch(e){ addMsg("Call start nahi hui, dobara try karein.", 'ai'); }
 }
 
 function stopCall(){
-  callMode = false;
+  if(callAlreadyOff) return;
+  callAlreadyOff = true;
   if(recognition) recognition.stop();
   window.speechSynthesis.cancel();
   addMsg("Call OFF ho gayi hai. Allah Hafiz!", 'ai');
 }
 
 input.addEventListener('keypress', (e)=>{ if(e.key==='Enter') sendMsg(); });
-window.onload = ()=>{ addMsg("Assalam u Alaikum! Main Hamze AI hoon. Aap mujhse baat karein, main jawab dungi.", 'ai'); };
+window.onload = ()=>{ addMsg("Assalam u Alaikum! Main Hamze AI hoon. Aap mujhse baat karein, main jawab dungi. Aap Islam, Pakistan, taleem ya kisi bhi cheez ke bare me pooch sakte hain.", 'ai'); };
 </script>
 </body>
 </html>
